@@ -1,0 +1,18 @@
+{% load static %}
+<html>
+    <head>
+        <title>EPIC EVENT</title>
+        <link rel="stylesheet" href="{% static 'app.css' %}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    </head>
+    <body>
+        <div class="topnav">
+            <h1>LITReview</h1>
+            {% if user.is_authenticated %}
+                <p id="welcome">Connecté en tant que : {{ user }} !</p>
+            {% endif %}
+        <div class="main">
+            {% block content %}{% endblock content %}
+        </div>
+    </body>
+</html>

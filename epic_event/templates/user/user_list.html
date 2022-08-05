@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% load rest_framework %}
+{% block content %}
+    <h2>Users List</h2>
+    <div class="grid-container">
+    {% for user in users %}
+        {% include 'user/user_snippet.html' with user=user %}
+    {% endfor %}
+    </div>
+     {% include 'partials\page_navigator.html' %}
+{% endblock content %}

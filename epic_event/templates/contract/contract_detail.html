@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load rest_framework %}
+
+{% block content %}
+
+<h1>Contract - {{ contract_id }}</h1>
+
+<form action="{% url 'user_detail' pk=user.pk %}" method="POST">
+    {% csrf_token %}
+    {% render_form serializer %}
+    <input type="submit" value="Save">
+</form>
+
+<p>user_form</p>
+{% endblock content %}

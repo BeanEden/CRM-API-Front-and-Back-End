@@ -11,7 +11,10 @@ class Contract(models.Model):
     date_updated = models.DateTimeField(auto_now=True)
     status = models.BooleanField(default=False)
     amount = models.FloatField(default=False)
-    payment_due = models.DateTimeField(auto_now=True)
+    payment_due = models.DateTimeField()
+
+    class Meta:
+        ordering = ['-date_updated']
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)

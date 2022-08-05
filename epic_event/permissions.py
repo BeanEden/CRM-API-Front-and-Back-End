@@ -1,20 +1,30 @@
-# from django.contrib.auth import get_user_model
-# from django.db import models
-#
-# User = get_user_model()
-#
-# def permission_classes(user):
-#     if user.team == "management":
-#         user.has_perms('authentication.add_user',
-#                        'authentication.change_user',
-#                        'authentication.delete_user')
-#
-#             .has_view_permission(request, )
-#         )
-#
-# class Management_permission(models.Permission):
-#
-#
-# class ManagementGroup(models.Group):
-#     name = 'Management'
+from rest_framework import permissions
 
+
+class IsManagementTeam(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        if request.user.team == 'management':
+            return True
+        else:
+            return False
+
+class IsAllowedOrReadOnly(permissions.BasePermission):
+    """
+    Object-level permission to only allow owners of an object to edit it.
+    Assumes the model instance has an `author` attribute.
+    """
+
+    def has_object_permission(self, request, view, obj):
+        # Read permissions are allowed to any request,
+        # so we'll always allow GET, HEAD or OPTIONS requests.
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        # Instance must have an attribute named `author`.
+        if obj.author == request.user:
+            return True
+
+        else:
+            return False

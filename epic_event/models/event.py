@@ -16,8 +16,11 @@ class Event(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
     attendees = models.IntegerField()
-    event = models.DateTimeField(auto_now_add=True)
-    notes = models.TextField(blank=True, RegexValidator= TEXT_REGEX)
+    event = models.DateTimeField()
+    notes = models.TextField(blank=True, validators=[TEXT_REGEX])
+
+    class Meta:
+        ordering = ['-date_updated']
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)

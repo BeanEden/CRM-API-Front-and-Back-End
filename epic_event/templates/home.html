@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load review_extras %}
+{% block content %}
+    <div class = "top-button">
+    </div>
+    <h2>Derniers posts</h2>
+    <div class="feed">
+        {% for instance in page_obj %}
+            {% if instance|model_type == 'User' %}
+                {% include 'user/user_snippet.html' with user=instance %}
+            {% elif instance|model_type == 'Review' %}
+                {% include 'customer/customer_snippet.html' with customer=instance %}
+            {% endif %}
+        {% endfor %}
+    </div>
+    {% include 'partials\page_navigator.html' %}
+{% endblock content %}

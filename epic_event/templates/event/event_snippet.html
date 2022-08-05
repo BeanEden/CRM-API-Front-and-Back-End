@@ -1,0 +1,11 @@
+    <div class="snippet">
+        <p class = "date">{{ event.date_updated }}</p>
+        <p>customer : {{ event.customer_id }}</p>
+        <p>attendees : {{ attendees }}</p>
+        <p>notes : {{ notes }}</p>
+        {% if user.team != 'sales' %}
+            <div class = "edit-button">
+                <a href=""><button>Modifier</button></a>
+            </div>
+        {% endif %}
+    </div>
