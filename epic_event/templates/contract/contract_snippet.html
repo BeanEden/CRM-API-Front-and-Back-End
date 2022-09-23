@@ -7,7 +7,7 @@
         <p>status : {{ customer.status }}</p>
 
         {% if customer.status != 'ongoing' %}
-        <a href="{% url 'contract_create' %}"><button>Add a contract</button></a>
+        <a href="{% url 'event_create' %}"><button>Add an event</button></a>
             {% else %}
             <a href="{% url 'contract_detail' %}"><button>See the contract</button></a>
     {% endif %}

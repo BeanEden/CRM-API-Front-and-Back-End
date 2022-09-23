@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load rest_framework %}
 {% block content %}
-    <h2>Customer List of {{ request.user.first_name }} {{ request.user.last_name }} - {{ request.user.team }}</h2>
+    <h2>Contract List of {{ request.user.first_name }} {{ request.user.last_name }} - {{ request.user.team }}</h2>
 {#    <form action="{% url 'user_list' %}" method="POST">#}
 {#    {% csrf_token %}#}
 {#    {% render_form { serializer } %}#}
@@ -9,8 +9,8 @@
 {#</form>#}
 
     <div class="grid-container">
-    {% for customer in customers %}
-        {% include 'customer/../contract/contract_snippet.html' with customer=customer %}
+    {% for contract in contracts %}
+        {% include 'contract/contract_snippet.html' with contract=contract %}
         {% if request.user.team == management %}
             <div class = "edit-button">
                 <a href="{% url 'customer_detail' customer.id %}"><button>Modifier</button></a>

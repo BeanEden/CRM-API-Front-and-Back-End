@@ -3,13 +3,11 @@
 
 {% block content %}
 
-<h1>Customer - {{ customer_id }}</h1>
+<h1>Create a new customer</h1>
 
-<form action="{% url 'customer_detail' pk=customer.pk %}" method="POST">
+<form action="{% url 'customer_create' %}" method="POST">
     {% csrf_token %}
     {% render_form serializer %}
     <input type="submit" value="Save">
 </form>
-
-<p>customer_form</p>
 {% endblock content %}

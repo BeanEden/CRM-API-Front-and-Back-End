@@ -22,7 +22,14 @@ class SignupForm(UserCreationForm):
 
     class Meta(UserCreationForm.Meta):
         model = User
-        fields = ('username', 'team')
+        fields = ('first_name',
+                 'last_name',
+                 'email',
+                 'password',
+                 'team'
+                    )
+
+
 
 class DeleteBlogForm(forms.Form):
     delete_blog = forms.BooleanField(widget=forms.HiddenInput, initial=True)

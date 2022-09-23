@@ -5,13 +5,62 @@
         <link rel="stylesheet" href="{% static 'app.css' %}">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     </head>
-    <body>
+<body>
         <div class="topnav">
-            <h1>LITReview</h1>
+            <h1>Epic Event</h1>
+
+            <img class ="logo" src="{% static 'images/logo_litr_white_nameless.png'%}">
             {% if user.is_authenticated %}
-                <p id="welcome">Connecté en tant que : {{ user }} !</p>
+
+                {% if user.profile_photo %}
+                    <img class="avatar" src={{ user.profile_photo.url }}>
+                {% else %}
+                    <img class="avatar" src="{% static 'images/default_profile.png'%}">
+                {% endif %}
+                <p id="welcome">Connecté en tant que : {{ user }}</p>
+
+                <div class="dropdown">
+                    <button class="dropbtn">Mon compte  <i class="fa fa-caret-down"></i></button>
+                    <div class="dropdown-content">
+                      <a href="#">Informations</a>
+                      <a href="{% url 'home' %}">Nouvelle photo</a>
+                      <a href="{% url 'logout' %}">Se déconnecter</a>
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <button class="dropbtn">Users<i class="fa fa-caret-down"></i></button>
+                        <div class="dropdown-content">
+                          <a href="{% url 'user_list' %}">Browse</a>
+                          <a href="{% url 'user_create' %}">New</a>
+                        </div>
+                    </div>
+                <div class="dropdown">
+                    <button class="dropbtn">Contracts<i class="fa fa-caret-down"></i></button>
+                        <div class="dropdown-content">
+                          <a href="{% url 'contract_list' %}">Browse</a>
+                            <a href="{% url 'contract_create' %}">New</a>
+                        </div>
+                </div>
+                <div class="dropdown">
+                    <button class="dropbtn">Customers<i class="fa fa-caret-down"></i></button>
+                        <div class="dropdown-content">
+                          <a href="{% url 'customer_list' %}">Browse</a>
+                            <a href="{% url 'customer_create' %}">New</a>
+                        </div>
+                </div>
+                <div class="dropdown">
+                    <button class="dropbtn">Events<i class="fa fa-caret-down"></i></button>
+                        <div class="dropdown-content">
+                          <a href="{% url 'event_list' %}">Browse</a>
+                            <a href="{% url 'event_create' %}">New</a>
+                        </div>
+                </div>
+                <a href="{% url 'home' %}">Accueil</a>
+                <input type="text" placeholder="Search..">
             {% endif %}
+        </div>
         <div class="main">
+        flash
             {% block content %}{% endblock content %}
         </div>
     </body>

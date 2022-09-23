@@ -9,7 +9,7 @@
             {% if instance|model_type == 'User' %}
                 {% include 'user/user_snippet.html' with user=instance %}
             {% elif instance|model_type == 'Review' %}
-                {% include 'customer/customer_snippet.html' with customer=instance %}
+                {% include 'customer/contract/customer_snippet.html' with customer=instance %}
             {% endif %}
         {% endfor %}
     </div>

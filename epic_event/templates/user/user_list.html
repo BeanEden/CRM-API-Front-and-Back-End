@@ -1,11 +1,30 @@
 {% extends 'base.html' %}
 {% load rest_framework %}
 {% block content %}
-    <h2>Users List</h2>
+    <h2>Users List of {{ request.user.first_name }} {{ request.user.last_name }} - {{ request.user.team }}</h2>
+{#    <form action="{% url 'user_list' %}" method="POST">#}
+{#    {% csrf_token %}#}
+{#    {% render_form { serializer } %}#}
+{#    <input type="submit" value="Save">#}
+{#</form>#}
+
     <div class="grid-container">
     {% for user in users %}
         {% include 'user/user_snippet.html' with user=user %}
+        <div class="modal">
+        {% include 'user/modal.html' with user=user%}
+        </div>
+        {% if request.user.team == management %}
+            <div class = "edit-button">
+                <a href="{% url 'user_detail' user.id %}"><button>Modifier</button></a>
+                <a href="{% url 'user_detail' user.id %}"><button>Supprimer</button></a>
+            </div>
+        {% endif %}
     {% endfor %}
+
     </div>
      {% include 'partials\page_navigator.html' %}
+
+
+
 {% endblock content %}

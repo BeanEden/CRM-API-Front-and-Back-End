@@ -3,24 +3,37 @@ from django.db import models
 from django.core.validators import validate_slug
 
 
+CUSTOMER_STATUS = [('prospect', 'PROSPECT'),
+             ('ongoing', 'EN COURS'),
+             ('unactive', 'NON ACTIF'),
+              ('blacklisted', 'BLACKLIST')]
+
+CUSTOMER_PROFILE = [('complete', 'COMPLETE'),
+             ('uncomplete', 'UNCOMPLETE')]
+
+
 class Customer(models.Model):
     sales_contact = models.ForeignKey(
         to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
         related_name='sales_user_assigned')
     first_name = models.CharField(max_length=25, validators=[validate_slug])
     last_name = models.CharField(max_length=25, validators=[validate_slug])
-    email = models.EmailField(max_length=100)
-    phone = models.CharField(max_length=25, validators=[validate_slug])
-    mobile = models.CharField(max_length=25, validators=[validate_slug])
-    company_name = models.CharField(max_length=25, validators=[validate_slug])
+    email = models.EmailField(max_length=100, blank=True)
+    phone = models.CharField(max_length=25, validators=[validate_slug], blank=True)
+    mobile = models.CharField(max_length=25, validators=[validate_slug], blank=True)
+    company_name = models.CharField(max_length=25, validators=[validate_slug], blank=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
+    status = models.CharField(max_length=20, choices=CUSTOMER_STATUS, default="prospect")
+    profile = models.CharField(max_length=20, choices=CUSTOMER_PROFILE, default="uncomplete")
 
     class Meta:
         ordering = ['-date_updated']
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
+
+
 
 
 
