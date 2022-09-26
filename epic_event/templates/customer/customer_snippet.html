@@ -1,14 +1,20 @@
-    <div class="snippet">
+{% load static %}
+{##}
+{#    <div class="snippet" background-color: #f6f6e5>#}
+{#    {% if  customer.status== 'prospect' %}#}
+{#    %#}
+        <p class="date">last_update : {{ customer.date_updated }}</p>
         {% if customer.company_name%}
-        <p>company : {{ customer.company_name}}</p>
-        {% endif %}
-        <p>customer : {{ customer.first_name }} {{ customer.last_name }}</p>
-        <p>sales_contact : {{ customer.sales_contact.username }}</p>
-        <p>status : {{ customer.status }}</p>
-
-        {% if customer.status != 'ongoing' %}
-        <a href="{% url 'contract_create' %}"><button>Add a contract</button></a>
+        <p class = titre>company : {{ customer.company_name}}</p>
+        <p>contact : {{ customer.first_name }} {{ customer.last_name }}</p>
             {% else %}
-            <a href="{% url 'contract_detail' %}"><button>See the contract</button></a>
-    {% endif %}
-    </div>
+           <p class = titre>customer : {{ customer.first_name }} {{ customer.last_name }}</p>
+        {% endif %}
+
+        <p>sales_contact : {{ customer.sales_contact.username }}<br>
+        status : {{ customer.status }}</p>
+        {% if customer.status == 'ongoing' %}
+            <a href="{% url 'contract_list' %}"><button><img src="{% static 'images/contrat_list.png'%}">Ongoing contracts</button></a>
+        {% endif %}
+        <a href="{% url 'contract_create' %}"><button><img src="{% static 'images/add_contract.png'%}">Add a contract</button></a>
+{#    </div>#}

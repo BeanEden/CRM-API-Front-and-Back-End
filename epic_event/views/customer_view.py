@@ -41,8 +41,12 @@ class CustomerListView(APIView, PaginatedViewMixin):
         if request.user.team == "management" or "sales":
             queryset = Customer.objects.all()
         elif request.user.team == "support":
-            events = Event.objects.filter(support_contact=request.user)
-            queryset = Customer.objects.filter(customer_id_in=events.id)
+            # events = Event.objects.filter(support_contact=request.user)
+            # queryset = Customer.objects.filter(customer_id_in=events.id)
+            wanted_items = set()
+            for item in Event.objects.filter(sales_contact=request.user):
+                wanted_items.add(item.id)
+            queryset = Customer.objects.filter(pk__in=wanted_items)
         else:
             flash = "You don't have permission to access this page"
             return redirect('home')

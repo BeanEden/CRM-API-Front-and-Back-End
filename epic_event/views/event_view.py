@@ -20,25 +20,28 @@ User = get_user_model()
 
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAuthenticatedOrReadOnly
 from epic_event.permissions import IsManagementTeam
+from epic_event.views.general_view import PaginatedViewMixin
 
 
-class EventListView(APIView):
+class EventListView(APIView, PaginatedViewMixin):
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'event/event_list.html'
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        queryset = ""
         if request.user.team == 'management':
             queryset = Event.objects.all()
-        if request.user.team == 'sales':
+        elif request.user.team == 'sales':
             wanted_items = set()
-            for item in Event.objects.filter(sales_contact=request.user):
+            for item in Customer.objects.filter(sales_contact=request.user):
                 wanted_items.add(item.id)
             queryset = Event.objects.filter(pk__in=wanted_items)
-        if request.user.team == 'support':
+        else:
             queryset = Event.objects.filter(support_contact=request.user)
-        return Response({'events': queryset})
+        posts_paged = self.paginate_view(
+            request, sorted(queryset,
+                            key=lambda x: x.date_updated, reverse=False))
+        return Response({'events': posts_paged})
 
 
 class EventDetailView(APIView):
@@ -75,7 +78,7 @@ class EventCreateView(APIView):
         return Response({'serializer': serializer})
 
     def post(self, request):
-        serializer = UserDetailSerializer(data=request.data)
+        serializer = EventDetailSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return redirect('user_list')

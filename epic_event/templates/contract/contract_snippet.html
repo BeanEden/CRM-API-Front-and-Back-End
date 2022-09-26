@@ -1,10 +1,7 @@
     <div class="snippet">
-        {% if customer.company_name%}
-        <p>company : {{ customer.company_name}}</p>
-        {% endif %}
-        <p>customer : {{ customer.first_name }} {{ customer.last_name }}</p>
-        <p>sales_contact : {{ customer.sales_contact.username }}</p>
-        <p>status : {{ customer.status }}</p>
+        <p>customer : {{ contract.customer_id.first_name }}</p>
+        <p>sales_contact : {{ contract.sales_contact.username }}</p>
+        <p>status : {{ contract.status }}</p>
 
         {% if customer.status != 'ongoing' %}
         <a href="{% url 'event_create' %}"><button>Add an event</button></a>

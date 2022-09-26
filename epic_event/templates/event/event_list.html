@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load rest_framework %}
 {% block content %}
-    <h2>Events List</h2>
+    <h1>Events List</h1>
     <div class="grid-container">
     {% for event in events %}
         {% include 'event/event_snippet.html' with event=event %}

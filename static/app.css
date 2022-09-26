@@ -56,6 +56,7 @@ h2 {
 .welcome {
     position : absolute;
     object-position: center ;
+    text-align:right;
     color : white;
 }
 
@@ -176,7 +177,6 @@ h2 {
     padding: 10px;
 }
 
-
 .snippet .intro{
     padding: 0px;
     margin: 0px;
@@ -199,11 +199,13 @@ h2 {
     margin: 0px;
 }
 
-.snippet a {
-    text-decoration: inherit;
-    color: black;
-    text-underline: none;
-}
+/*.snippet a {*/
+/*    text-decoration: inherit;*/
+/*    color: black;*/
+/*    text-underline: none;*/
+/*}*/
+
+
 
 .snippet .book-cover {
     object-position: left;
@@ -211,20 +213,31 @@ h2 {
     width : auto;
     margin-bottom: 15px;
 }
+.snippet .edit-button {
+    border: 1px;
+}
+
+.snippet button {
+    position:absolute;
+    right: 20%
+}
 
 .snippet .edit-button button {
+    position:relative;
+    right:0px;
     background-color: #01094d;
   border: none;
     border-radius: 5px;
   color: white;
-    width: 115px;
   padding: 10px 20px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
   font-size: 1em;
     margin-right:5px;
+    float:right;
 }
+
 
 .snippet .review-button button {
     position: sticky;

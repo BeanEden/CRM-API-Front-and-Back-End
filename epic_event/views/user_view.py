@@ -44,7 +44,7 @@ class UserListView(APIView, PaginatedViewMixin):
             return Response({'users': posts_paged, 'serializer': serializer})
         else :
             flash = "You don't have permission to access this page"
-            return redirect ('home')
+            return redirect('home')
 
     def post(self, request, format=None):
         serializer = UserDetailSerializer(data=request.data)

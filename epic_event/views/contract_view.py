@@ -24,13 +24,19 @@ from epic_event.permissions import IsManagementTeam
 from epic_event.views.general_view import PaginatedViewMixin
 
 
+def get_path(request):
+    path = request.path_info
+    split_path = path.split('/')
+    print(split_path)
+
+
 class ContractListView(APIView, PaginatedViewMixin):
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'contract/contract_list.html'
     permission_classes = [IsAuthenticated]
 
-
-    def get(self, request, format = None):
+    def get(self, request):
+        get_path(request)
         serializer = ContractDetailSerializer()
         if request.user.team == "management" or "sales":
             queryset = Contract.objects.all()
@@ -85,3 +91,5 @@ class ContractCreateView(APIView):
             serializer.save()
             return redirect('event_create')
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# def special_list_view()

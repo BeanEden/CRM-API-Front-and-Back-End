@@ -2,6 +2,8 @@ from django.conf import settings
 from django.db import models
 from .customer import Customer
 
+EVENT_STATUS = [('complete', 'COMPLETE'),
+             ('uncomplete', 'UNCOMPLETE')]
 
 class Contract(models.Model):
     sales_contact = models.ForeignKey(to=settings.AUTH_USER_MODEL,
