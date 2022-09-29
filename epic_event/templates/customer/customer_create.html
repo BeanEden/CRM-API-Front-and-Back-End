@@ -10,4 +10,5 @@
     {% render_form serializer %}
     <input type="submit" value="Save">
 </form>
+    {{ request.user.team }}
 {% endblock content %}

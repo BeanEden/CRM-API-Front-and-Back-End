@@ -7,8 +7,8 @@ from django.urls import path
 
 # from epic_event.views import SignUpView
 from epic_event.views.user_view import UserListView, UserCreateDetailView, UserDetailView
-from epic_event.views.customer_view import CustomerListView, CustomerCreateView, CustomerDetailView
-from epic_event.views.contract_view import ContractListView, ContractCreateView, ContractDetailView
+from epic_event.views.customer_view import CustomerListView, CustomerCreateView, CustomerDetailView, customer_detail_view, customer_create_view
+from epic_event.views.contract_view import ContractListView, ContractCreateView, ContractDetailView, contract_create_view
 from epic_event.views.event_view import EventListView, EventCreateView, EventDetailView
 import epic_event.views
 from epic_event.views.general_view import GlobalFeed
@@ -41,15 +41,26 @@ urlpatterns = [
     path('user_list/', UserListView.as_view(), name='user_list'),
     path('user_create/', SignUpView.as_view(), name='user_create'),
     path('user_detail/<int:pk>/', UserDetailView.as_view(), name='user_detail'),
-    # path('customer_create/', epic_event.views.CustomerCreateDetail.as_view(), name='customer_create')
+
+
     # path('contract_list/')
     path('customer_list/', CustomerListView.as_view(), name='customer_list'),
-    path('customer_create/', CustomerCreateView.as_view(), name='customer_create'),
+    path('customer_create/', customer_create_view, name="customer_create"),
+    # path('<int:pk>/customer-edit/', customer_edit_view,)
+
+    # path('customer_create/', CustomerCreateView.as_view(), name="customer_create"),
+    # path('<int:pk>/customer_create/', CustomerCreateView.as_view(), name='customer_create'),
+    # path('<int:customer_id>/customer_detail/', customer_detail_view, name="customer_detail"),
+    path('<int:pk>/customer_detail/', CustomerDetailView.as_view(),
+         name="customer_detail"),
     path('contract_list:', ContractListView.as_view(), name='contract_list'),
-    path('<int:pk>/contract_create/', ContractCreateView.as_view(), name='customer_contract_create'),
+    # path('<int:pk>/contract_create/', ContractCreateView.as_view(), name='customer_contract_create'),
+    path('<int:customer_id>/contract_create/', contract_create_view,
+         name='customer_contract_create'),
+
     path('<int:pk>/contract_list/', ContractCreateView.as_view(), name='customer_contract_list'),
-    path('contract_create/', ContractCreateView.as_view(),
-         name='contract_create'),
+    # path('contract_create/', ContractCreateView.as_view(),
+    #      name='contract_create'),
     path('event_list/', EventListView.as_view(), name = 'event_list'),
     path('event_create/', EventCreateView.as_view(), name= 'event_create')
     ]

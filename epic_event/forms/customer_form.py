@@ -13,3 +13,6 @@ class CustomerForm(forms.ModelForm):
                   'mobile',
                   'company_name'
                   ]
+
+class DeleteBlogForm(forms.Form):
+    delete_blog = forms.BooleanField(widget=forms.HiddenInput, initial=True)

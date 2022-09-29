@@ -38,7 +38,7 @@
                     <button class="dropbtn">Contracts<i class="fa fa-caret-down"></i></button>
                         <div class="dropdown-content">
                           <a href="{% url 'contract_list' %}">Browse</a>
-                            <a href="{% url 'contract_create' %}">New</a>
+{#                            <a href="{% url 'contract_create' %}">New</a>#}
                         </div>
                 </div>
                 <div class="dropdown">
@@ -60,7 +60,9 @@
             {% endif %}
         </div>
         <div class="main">
-        flash
+            {% if flash %}
+        <h3>{{ flash }}</h3>
+        {% endif %}
             {% block content %}{% endblock content %}
         </div>
     </body>

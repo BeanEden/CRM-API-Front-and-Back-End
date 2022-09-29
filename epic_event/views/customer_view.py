@@ -3,7 +3,8 @@ from itertools import chain
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-
+from rest_framework.decorators import api_view, renderer_classes
+from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 from django.shortcuts import get_object_or_404, redirect, render
@@ -16,13 +17,15 @@ from epic_event.models.contract import Contract
 from epic_event.models.customer import Customer
 from epic_event.serializers import UserDetailSerializer
 from epic_event.serializers import CustomerDetailSerializer
+from epic_event.forms import CustomerForm, DeleteBlogForm
 
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 from epic_event.views.general_view import PaginatedViewMixin
-
+from rest_framework.decorators import api_view, renderer_classes
+from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 User = get_user_model()
 
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAuthenticatedOrReadOnly
@@ -73,14 +76,16 @@ class CustomerDetailView(APIView):
     def get(self, request, pk, format = None):
         customer = get_object_or_404(Customer, pk=pk)
         serializer = CustomerDetailSerializer(customer)
-        return Response(serializer.data)
+        return Response({'serializer': serializer})
 
-    def put(self, request, pk, format=None):
+    def patch(self, request, pk, format=None):
         customer = get_object_or_404(Customer, pk=pk)
-        serializer = CustomerDetailSerializer(customer, data=request.data)
+        print(customer)
+        serializer = CustomerDetailSerializer(customer, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            # return Response({'serializer': serializer})
+            return redirect('user_list')
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk, format=None):
@@ -108,3 +113,98 @@ class CustomerCreateView(APIView):
             serializer.save()
             return redirect('user_list')
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# # @login_required
+# def customer_detail_view(request, customer_id):
+#     customer = get_object_or_404(Customer, id=customer_id)
+#     return render(request, 'customer/customer_detail.html',
+#                   context={'customer': customer})
+
+
+def upload_serializer(serializer, field, data_updated):
+    serializer.data[field]=data_updated
+    return serializer
+
+@api_view(('GET', 'POST'))
+@renderer_classes((TemplateHTMLRenderer, JSONRenderer))
+def customer_create_view(request):
+    if request.user.team == "support":
+        flash = "You don't have permission to access this page"
+        return render(request, 'home.html', context={'flash': flash})
+    if request.user.team == "sales":
+        serializer = CustomerDetailSerializer(data={"sales_contact":request.user.id}, partial=True)
+        if serializer.is_valid():
+            return render(request, 'customer/customer_create.html',
+                          context={'serializer': serializer})
+    serializer = CustomerDetailSerializer()
+    if request.method == 'POST':
+        serializer = CustomerDetailSerializer(data = request.data)
+        print(serializer)
+        if serializer.is_valid():
+            serializer.save()
+            name = serializer.data["first_name"] +' '+ serializer.data["last_name"]
+            flash = "Customer " + name + "has been created"
+            return render(request, 'home.html', context={'flash': flash})
+    return render(request, 'customer/customer_create.html',
+                  context={'serializer': serializer})
+
+
+@api_view(('GET', 'POST', 'DELETE'))
+@renderer_classes((TemplateHTMLRenderer, JSONRenderer))
+def customer_detail_view(request, customer_id):
+    if request.user.team == "support":
+        flash = "You don't have permission to access this page"
+        return render(request, 'home.html', context={'flash': flash})
+    customer = get_object_or_404(Customer, id=customer_id)
+    if request.user.team == "sales":
+        serializer = CustomerDetailSerializer(
+            data={"sales_contact": request.user.id}, partial=True)
+        if serializer.is_valid():
+            return render(request, 'customer/customer_detail.html',
+                          context={'serializer': serializer})
+    serializer = CustomerDetailSerializer(customer)
+    if request.method == 'POST':
+        serializer = CustomerDetailSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            name = serializer.data["first_name"] + ' ' + serializer.data[
+                "last_name"]
+            flash = "Customer " + name + "has been updated"
+            return render(request, 'home.html', context={'flash': flash})
+    delete_form = DeleteBlogForm()
+    if request.method == "POST":
+        if request.user.team != 'management':
+            flash = "You don't have permission to access this page"
+            return render(request, 'home.html', context={'flash': flash})
+        name = serializer.data["first_name"] + ' ' + serializer.data[
+            "last_name"]
+        serializer.delete()
+        flash = "Customer " + name + "has been deleted"
+        return render(request, 'home.html', context={'flash': flash})
+    return render(request, 'customer/customer_detail.html',
+                  context={'serializer': serializer, 'delete_form': delete_form})
+
+
+
+# # @login_required
+# def customer_create_view(request):
+#     if request.user.team == "management":
+#         return render(request, 'home.html',)
+#     print("aaa")
+#     serializer = CustomerDetailSerializer()
+#     return render(request, 'customer/customer_create.html', context={'serializer': serializer})
+
+    # print(request.user.team)
+    # serializer['sales_contact'] = request.user.id
+    # print(serializer)
+    # print(serializer['sales_contact'])
+    # # serializer['sales_contact'] =
+    #
+    # if request.method == 'POST':
+    #     serializer = serializer.TicketForm(request.POST, request.FILES)
+    #     if serializer.is_valid():
+    #         ticket = serializer.save(commit=False)
+    #         ticket.user = request.user
+    #         ticket.save()
+    #         return redirect('home')

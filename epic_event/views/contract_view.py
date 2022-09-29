@@ -1,7 +1,7 @@
 from itertools import chain
 
 from django.contrib.auth import get_user_model
-
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 
 from epic_event.models.event import Event
@@ -92,4 +92,13 @@ class ContractCreateView(APIView):
             return redirect('event_create')
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# def special_list_view()
+
+@login_required
+def contract_create_view(request, *args, **kwargs):
+
+    serializer = CustomerDetailSerializer
+    print(request.user.team)
+    print(serializer)
+
+    return render(request, 'contract/contract_create.html',
+                  context={'serializer': serializer})

@@ -16,8 +16,8 @@ class Customer(models.Model):
     sales_contact = models.ForeignKey(
         to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
         related_name='sales_user_assigned')
-    first_name = models.CharField(max_length=25, validators=[validate_slug])
-    last_name = models.CharField(max_length=25, validators=[validate_slug])
+    first_name = models.CharField(max_length=25, validators=[validate_slug], blank=True)
+    last_name = models.CharField(max_length=25, validators=[validate_slug], blank=True)
     email = models.EmailField(max_length=100, blank=True)
     phone = models.CharField(max_length=25, validators=[validate_slug], blank=True)
     mobile = models.CharField(max_length=25, validators=[validate_slug], blank=True)

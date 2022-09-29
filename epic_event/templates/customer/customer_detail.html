@@ -3,13 +3,33 @@
 
 {% block content %}
 
-<h1>Customer - {{ customer_id }}</h1>
+<h1>Customer - {{ customer.id }}</h1>
+ <!-- Rectangular switch -->
+<label class="switch">
+  <input type="checkbox">
+  <span class="slider"></span>
+</label>
 
-<form action="{% url 'customer_detail' pk=customer.pk %}" method="POST">
+<!-- Rounded switch -->
+<label class="switch">
+  <input type="checkbox">
+  <span class="slider round"></span>
+</label>
+
+<form method="POST">
     {% csrf_token %}
     {% render_form serializer %}
     <input type="submit" value="Save">
 </form>
-
+{% if request.user.team == "management" %}
+<div class="submit-form">
+    <form method="POST" enctype="multipart/form-data">
+        {{ delete_form }}
+        {% csrf_token %}
+        <button type="submit" >Supprimer</button>
+    </form>
+    </div>
+    {% endif %}
 <p>customer_form</p>
+    <p>{{ request.user.team }}</p>
 {% endblock content %}

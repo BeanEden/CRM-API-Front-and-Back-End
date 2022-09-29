@@ -5,7 +5,7 @@
 
 <h1>Create a new contract</h1>
 
-<form action="{% url 'contract_create' %}" method="POST">
+<form action="{% url 'customer_contract_create' 3 %}" method="POST">
     {% csrf_token %}
     {% render_form serializer %}
     <input type="submit" value="Save">
