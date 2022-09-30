@@ -2,34 +2,11 @@
 {% load rest_framework %}
 {% block content %}
     <h2>Customer List of {{ request.user.first_name }} {{ request.user.last_name }} - {{ request.user.team }}</h2>
-{#    <form action="{% url 'user_list' %}" method="POST">#}
-{#    {% csrf_token %}#}
-{#    {% render_form { serializer } %}#}
-{#    <input type="submit" value="Save">#}
-{#</form>#}
-
     <div class="grid-container">
     {% for customer in customers %}
         <div class="snippet">
         {% include 'customer/customer_snippet.html' with customer=customer %}
         </div>
-{#        {% if  customer.status == 'prospect' %}#}
-{#            <div class="snippet" style="background-color:rgba(168,255,118,0.82)">#}
-{#            #}
-{#            </div>#}
-{#        {% elif customer.status == 'ongoing' %}#}
-{#            <div class="snippet" style="background-color:#7983da">#}
-{#            {% include 'customer/customer_snippet.html' with customer=customer %}#}
-{#            </div>#}
-{#        {% elif customer.status == 'blacklisted' %}#}
-{#            <div class="snippet" style="background-color:#69756b">#}
-{#            {% include 'customer/customer_snippet.html' with customer=customer %}#}
-{#            </div>#}
-{#        {% else %}#}
-{#            <div class="snippet">#}
-{#            {% include 'customer/customer_snippet.html' with customer=customer %}#}
-{#            </div>#}
-{#        {% endif %}#}
         {% if request.user.team == management %}
             <div class = "edit-button">
                 <a href="{% url 'customer_detail' customer.id %}"><button>Modifier</button></a>

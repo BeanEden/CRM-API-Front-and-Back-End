@@ -67,6 +67,90 @@ class CustomerListView(APIView, PaginatedViewMixin):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+
+@api_view(('GET', 'POST'))
+@renderer_classes((TemplateHTMLRenderer, JSONRenderer))
+def customer_create_view(request):
+    if request.user.team == "support":
+        flash = "You don't have permission to access this page"
+        return render(request, 'home.html', context={'flash': flash})
+    if request.user.team == "sales":
+        serializer = CustomerDetailSerializer(data={"sales_contact":request.user.id}, partial=True)
+        if serializer.is_valid():
+            return render(request, 'customer/customer_create.html',
+                          context={'serializer': serializer})
+    serializer = CustomerDetailSerializer()
+    if request.method == 'POST':
+        serializer = CustomerDetailSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            name = serializer.data["first_name"] +' '+ serializer.data["last_name"]
+            flash = "Customer " + name + "has been created"
+            return render(request, 'home.html', context={'flash': flash})
+    return render(request, 'customer/customer_create.html',
+                  context={'serializer': serializer})
+
+
+
+@api_view(('GET', 'POST', 'DELETE'))
+@renderer_classes((TemplateHTMLRenderer, JSONRenderer))
+def customer_detail_view(request, customer_id):
+    if request.user.team == "support":
+        flash = "You don't have permission to access this page"
+        return render(request, 'home.html', context={'flash': flash})
+    customer = get_object_or_404(Customer, id=customer_id)
+    serializer = CustomerDetailSerializer(customer)
+    if "update_customer" in request.POST:
+        serializer = CustomerDetailSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            name = str(customer)
+            flash = "Customer " + name + " has been successfully updated"
+            return render(request, 'home.html', context={'flash': flash})
+    if "delete_customer" in request.POST:
+        if request.user.team != "management":
+            flash = "You don't have permission to access this page"
+            return render(request, 'home.html', context={'flash': flash})
+        name = customer
+        customer.delete()
+        flash = "Customer " + str(name) + " has been successfully deleted"
+        return render(request, 'home.html', context={'flash': flash})
+    return render(request, 'customer/customer_detail.html',
+                  context={'serializer': serializer, 'customer': customer})
+
+#
+# @login_required
+# def customer_delete(request, customer_id):
+#     customer = get_object_or_404(Customer, id=customer_id)
+#     delete_form = DeleteBlogForm()
+#     if request.method == 'POST':
+#         customer.delete()
+#         return redirect('home')
+#     context = {'customer': customer, 'delete_form': delete_form}
+#     return render(request, 'customer/customer_delete.html', context=context)
+
+
+    # delete_form = DeleteBlogForm()
+    # if request.method == "POST":
+    #     if request.user.team != 'management':
+    #         flash = "You don't have permission to access this page"
+    #         return render(request, 'home.html', context={'flash': flash})
+    #     name = serializer.data["first_name"] + ' ' + serializer.data[
+    #         "last_name"]
+    #     serializer.delete()
+    #     flash = "Customer " + name + "has been deleted"
+    #     return render(request, 'home.html', context={'flash': flash})
+
+
+
+
+
+
+
+
+
+
+
 class CustomerDetailView(APIView):
 
     permission_classes = [IsAuthenticated, IsManagementTeam]
@@ -113,79 +197,6 @@ class CustomerCreateView(APIView):
             serializer.save()
             return redirect('user_list')
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-# # @login_required
-# def customer_detail_view(request, customer_id):
-#     customer = get_object_or_404(Customer, id=customer_id)
-#     return render(request, 'customer/customer_detail.html',
-#                   context={'customer': customer})
-
-
-def upload_serializer(serializer, field, data_updated):
-    serializer.data[field]=data_updated
-    return serializer
-
-@api_view(('GET', 'POST'))
-@renderer_classes((TemplateHTMLRenderer, JSONRenderer))
-def customer_create_view(request):
-    if request.user.team == "support":
-        flash = "You don't have permission to access this page"
-        return render(request, 'home.html', context={'flash': flash})
-    if request.user.team == "sales":
-        serializer = CustomerDetailSerializer(data={"sales_contact":request.user.id}, partial=True)
-        if serializer.is_valid():
-            return render(request, 'customer/customer_create.html',
-                          context={'serializer': serializer})
-    serializer = CustomerDetailSerializer()
-    if request.method == 'POST':
-        serializer = CustomerDetailSerializer(data = request.data)
-        print(serializer)
-        if serializer.is_valid():
-            serializer.save()
-            name = serializer.data["first_name"] +' '+ serializer.data["last_name"]
-            flash = "Customer " + name + "has been created"
-            return render(request, 'home.html', context={'flash': flash})
-    return render(request, 'customer/customer_create.html',
-                  context={'serializer': serializer})
-
-
-@api_view(('GET', 'POST', 'DELETE'))
-@renderer_classes((TemplateHTMLRenderer, JSONRenderer))
-def customer_detail_view(request, customer_id):
-    if request.user.team == "support":
-        flash = "You don't have permission to access this page"
-        return render(request, 'home.html', context={'flash': flash})
-    customer = get_object_or_404(Customer, id=customer_id)
-    if request.user.team == "sales":
-        serializer = CustomerDetailSerializer(
-            data={"sales_contact": request.user.id}, partial=True)
-        if serializer.is_valid():
-            return render(request, 'customer/customer_detail.html',
-                          context={'serializer': serializer})
-    serializer = CustomerDetailSerializer(customer)
-    if request.method == 'POST':
-        serializer = CustomerDetailSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            name = serializer.data["first_name"] + ' ' + serializer.data[
-                "last_name"]
-            flash = "Customer " + name + "has been updated"
-            return render(request, 'home.html', context={'flash': flash})
-    delete_form = DeleteBlogForm()
-    if request.method == "POST":
-        if request.user.team != 'management':
-            flash = "You don't have permission to access this page"
-            return render(request, 'home.html', context={'flash': flash})
-        name = serializer.data["first_name"] + ' ' + serializer.data[
-            "last_name"]
-        serializer.delete()
-        flash = "Customer " + name + "has been deleted"
-        return render(request, 'home.html', context={'flash': flash})
-    return render(request, 'customer/customer_detail.html',
-                  context={'serializer': serializer, 'delete_form': delete_form})
-
-
 
 # # @login_required
 # def customer_create_view(request):

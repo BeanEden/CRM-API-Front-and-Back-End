@@ -10,6 +10,7 @@ class ContractDetailSerializer(ModelSerializer):
         fields = ['id',
                  'sales_contact',
                  'customer_id',
+                 'name',
                  'status',
                  'amount',
                  'payment_due'

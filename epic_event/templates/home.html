@@ -6,12 +6,14 @@
     <h2>Derniers posts</h2>
     <div class="feed">
         {% for instance in page_obj %}
-            {% if instance|model_type == 'Contract' %}
+            {% if instance|model_type == 'User' %}
                 {% include 'user/user_snippet.html' with user=instance %}
             {% elif instance|model_type == 'Customer' %}
                 {% include 'customer/customer_snippet.html' with customer=instance %}
-            {% elif instance|model_type == 'Customer' %}
-            {% include 'customer/contract/customer_snippet.html' with customer=instance %}
+            {% elif instance|model_type == 'Contract' %}
+            {% include 'contract/contract_snippet.html' with contract=instance %}
+                {% elif instance|model_type == 'Event' %}
+            {% include 'event/event_snippet.html' with event=instance %}
             {% endif %}
         {% endfor %}
     </div>

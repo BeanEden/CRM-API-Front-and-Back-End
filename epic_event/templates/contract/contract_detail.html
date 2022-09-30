@@ -3,13 +3,19 @@
 
 {% block content %}
 
-<h1>Contract - {{ contract_id }}</h1>
+<h1>Contract - {{ contract }}</h1>
 
-<form action="{% url 'contract_detail' pk=user.pk %}" method="POST">
+<form method="POST">
     {% csrf_token %}
     {% render_form serializer %}
-    <input type="submit" value="Save">
+    <input type="submit" name="update_contract" value="Save">
 </form>
 
-<p>user_form</p>
+<div class="submit-form">
+    <form method="POST" enctype="multipart/form-data">
+        {{ delete_form }}
+        {% csrf_token %}
+        <input type="submit" name="delete_contract" value="Delete">
+    </form>
+    </div>
 {% endblock content %}

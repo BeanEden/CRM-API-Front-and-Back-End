@@ -217,6 +217,12 @@ h2 {
     border: 1px;
 }
 
+.snippet .customer-banner {
+    padding: 0;
+    height: 3em;
+}
+
+
 .snippet button {
     position:absolute;
     right: 20%
@@ -430,4 +436,9 @@ input:checked + .slider:before {
 
 .slider.round:before {
   border-radius: 50%;
+}
+
+.customer-banner {
+    position: relative;
+    right:0;
 }

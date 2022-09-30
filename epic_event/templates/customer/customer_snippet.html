@@ -1,6 +1,7 @@
 {% load static %}
+<div class="snippet">
         {% if  customer.status == 'prospect' %}
-            <img class="customer-banner" src="{% static 'images/customers/banner_waved_prospects.png'%}"
+            <img class="customer-banner" src="{% static 'images/customers/banner_waved_prospects.png'%}">
         {% endif %}
         <p class="date">last_update : {{ customer.date_updated }}</p>
         {% if customer.company_name%}
@@ -9,14 +10,13 @@
             {% else %}
            <p class = titre>customer : {{ customer.first_name }} {{ customer.last_name }}</p>
         {% endif %}
-
         <p>sales_contact : {{ customer.sales_contact.username }}<br>
         status : {{ customer.status }}</p>
         {% if customer.status == 'ongoing' %}
             <a href="{% url 'contract_list' %}"><button><img src="{% static 'images/contrat_list.png'%}">Ongoing contracts</button></a>
         {% endif %}
-{#        <a href="{% url 'contract_create' %}"><button><img src="{% static 'images/add_contract.png'%}">Add a contract</button></a>#}
-{#        <a href="{% url 'customer_detail' customer.id %}"><button><img src="{% static 'images/add_contract.png'%}">Add a contract</button></a>#}
+        <a href="{% url 'contract_create' customer.id %}"><button><img src="{% static 'images/add_contract.png'%}">Add a contract</button></a>
         <a href="{% url 'customer_detail' customer.id %}"><button>go to the customer</button></a>
-{#        {%  include "customer_detail" with customer_id=customer.id%}#}
+</div>
+    {#        {%  include "customer_detail" with customer_id=customer.id%}#}
 {#    </div>#}

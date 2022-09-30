@@ -17,7 +17,8 @@ from rest_framework.views import APIView
 from rest_framework import status
 
 User = get_user_model()
-
+from rest_framework.decorators import api_view, renderer_classes
+from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAuthenticatedOrReadOnly
 from epic_event.permissions import IsManagementTeam
 from epic_event.views.general_view import PaginatedViewMixin
@@ -42,6 +43,50 @@ class EventListView(APIView, PaginatedViewMixin):
             request, sorted(queryset,
                             key=lambda x: x.date_updated, reverse=False))
         return Response({'events': posts_paged})
+
+
+@api_view(('GET', 'POST'))
+@renderer_classes((TemplateHTMLRenderer, JSONRenderer))
+def event_create_view(request, contract_id=None):
+    if request.user.team == "support":
+        serializer = EventDetailSerializer(data={"support_contact": request.user.id}, partial=True)
+        if serializer.is_valid():
+            return render(request, 'event/event_create.html',
+                          context={'serializer': serializer})
+    serializer = EventDetailSerializer()
+    if request.method == 'POST':
+        serializer = EventDetailSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            flash = "Event " + str(serializer) + "has successfully been created"
+            return render(request, 'home.html', context={'flash': flash})
+    return render(request, 'event/event_create.html',
+                  context={'serializer': serializer})
+
+
+@api_view(('GET', 'POST', 'DELETE'))
+@renderer_classes((TemplateHTMLRenderer, JSONRenderer))
+def event_detail_view(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    serializer = EventDetailSerializer(event)
+    if "update_event" in request.POST:
+        serializer = EventDetailSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            name = str(event)
+            flash = name + " has been successfully updated"
+            return render(request, 'home.html', context={'flash': flash})
+    if "delete_contract" in request.POST:
+        if request.user.team != "management":
+            flash = "You don't have permission to access this page"
+            return render(request, 'home.html', context={'flash': flash})
+        name = str(event)
+        event.delete()
+        flash = name + " has been successfully deleted"
+        return render(request, 'home.html', context={'flash': flash})
+    return render(request, 'event/event_detail.html',
+                  context={'serializer': serializer, 'event': event})
+
 
 
 class EventDetailView(APIView):

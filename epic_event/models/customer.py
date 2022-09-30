@@ -33,6 +33,12 @@ class Customer(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
+    def __str__(self):
+        if self.company_name:
+            return str(self.company_name)
+        name = self.first_name + ' '+self.last_name
+        return str(name)
+
 
 
 

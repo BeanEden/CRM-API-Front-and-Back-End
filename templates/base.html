@@ -38,7 +38,7 @@
                     <button class="dropbtn">Contracts<i class="fa fa-caret-down"></i></button>
                         <div class="dropdown-content">
                           <a href="{% url 'contract_list' %}">Browse</a>
-{#                            <a href="{% url 'contract_create' %}">New</a>#}
+                            <a href="{% url 'contract_create_untied' %}">New</a>
                         </div>
                 </div>
                 <div class="dropdown">
@@ -52,7 +52,7 @@
                     <button class="dropbtn">Events<i class="fa fa-caret-down"></i></button>
                         <div class="dropdown-content">
                           <a href="{% url 'event_list' %}">Browse</a>
-                            <a href="{% url 'event_create' %}">New</a>
+                            <a href="{% url 'event_create_untied' %}">New</a>
                         </div>
                 </div>
                 <a href="{% url 'home' %}">Accueil</a>

@@ -5,7 +5,7 @@
         <p>notes : {{ event.notes }}</p>
         {% if user.team != 'sales' %}
             <div class = "edit-button">
-                <a href=""><button>Modifier</button></a>
+                <a href="{% url 'event_detail' event.id %}"><button>Modifier</button></a>
             </div>
         {% endif %}
     </div>

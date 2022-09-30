@@ -1,11 +1,14 @@
     <div class="snippet">
-        <p>customer : {{ contract.customer_id.first_name }}</p>
+        <p>customer : {{ contract.customer_id }}</p>
+        <a href="{% url 'contract_detail' contract.id %}">name : {{ contract }}</a>
         <p>sales_contact : {{ contract.sales_contact.username }}</p>
         <p>status : {{ contract.status }}</p>
-
+        <p>payment_due : {{ contract.payment_due }}</p>
         {% if customer.status != 'ongoing' %}
-        <a href="{% url 'event_create' %}"><button>Add an event</button></a>
+        <a href="{% url 'event_create' contract.id %}"><button>Add an event</button></a>
             {% else %}
-            <a href="{% url 'contract_detail' %}"><button>See the contract</button></a>
+            <br>
     {% endif %}
+<br>
+<a href="{% url 'contract_detail' contract.id %}"><button>See the contract</button></a>
     </div>

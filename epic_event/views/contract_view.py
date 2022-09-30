@@ -17,7 +17,8 @@ from rest_framework.views import APIView
 from rest_framework import status
 
 User = get_user_model()
-
+from rest_framework.decorators import api_view, renderer_classes
+from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.permissions import IsAuthenticated, AllowAny, \
     IsAuthenticatedOrReadOnly
 from epic_event.permissions import IsManagementTeam
@@ -85,20 +86,73 @@ class ContractCreateView(APIView):
 
     def post(self, request):
         serializer = ContractDetailSerializer(data=request.data)
-        print(serializer.is_valid())
-        print(serializer)
         if serializer.is_valid():
             serializer.save()
             return redirect('event_create')
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@login_required
-def contract_create_view(request, *args, **kwargs):
-
-    serializer = CustomerDetailSerializer
-    print(request.user.team)
-    print(serializer)
-
-    return render(request, 'contract/contract_create.html',
+@api_view(('GET', 'POST'))
+@renderer_classes((TemplateHTMLRenderer, JSONRenderer))
+def contract_create_view(request, customer_id=None):
+    if request.user.team == "support":
+        flash = "You don't have permission to access this page"
+        return render(request, 'home.html', context={'flash': flash})
+    if customer_id:
+        customer = get_object_or_404(Customer, id=customer_id)
+        if request.user.team == "sales":
+            serializer = ContractDetailSerializer(data={
+                "sales_contact": request.user.id,
+                "customer_id": customer_id},
+                partial=True)
+            if serializer.is_valid():
+                return render(request, 'contract/contract_create.html',
+                              context={'serializer': serializer, 'customer':customer})
+        customer = get_object_or_404(Customer, id=customer_id)
+        serializer = ContractDetailSerializer()
+        if request.user.team == "management":
+            serializer = ContractDetailSerializer(data={
+                "sales_contact": customer.sales_contact.id,
+                "customer_id": customer_id},
+                partial=True)
+            if serializer.is_valid():
+                return render(request, 'contract/contract_create.html',
+                              context={'serializer': serializer, 'customer':customer})
+        if request.method == 'POST':
+            serializer = ContractDetailSerializer(data = request.data)
+            if serializer.is_valid():
+                serializer.save()
+                name = serializer.data["name"]
+                flash = "Contract " + name + "with customer" + str(customer) +" has been created"
+                return render(request, 'home.html', context={'flash': flash})
+    else:
+        serializer = ContractDetailSerializer()
+    return render(request, 'customer/customer_create.html',
                   context={'serializer': serializer})
+
+
+@api_view(('GET', 'POST', 'DELETE'))
+@renderer_classes((TemplateHTMLRenderer, JSONRenderer))
+def contract_detail_view(request, contract_id):
+    if request.user.team == "support":
+        flash = "You don't have permission to access this page"
+        return render(request, 'home.html', context={'flash': flash})
+    contract = get_object_or_404(Contract, id=contract_id)
+    serializer = ContractDetailSerializer(contract)
+    if "update_contract" in request.POST:
+        serializer = ContractDetailSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            name = str(contract)
+            flash = "Contract " + name + " has been successfully updated"
+            return render(request, 'home.html', context={'flash': flash})
+    if "delete_contract" in request.POST:
+        if request.user.team != "management":
+            flash = "You don't have permission to access this page"
+            return render(request, 'home.html', context={'flash': flash})
+        name = contract
+        contract.delete()
+        flash = "Contract " + str(name) + " has been successfully deleted"
+        return render(request, 'home.html', context={'flash': flash})
+    return render(request, 'contract/contract_detail.html',
+                  context={'serializer': serializer, 'contract': contract})
