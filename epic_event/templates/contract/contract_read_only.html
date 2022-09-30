@@ -1,4 +1,11 @@
-    <div class="snippet">
+{% extends 'base.html' %}
+{% load rest_framework %}
+
+{% block content %}
+
+<h1>Contract - {{ contract }}</h1>
+
+<div class="snippet">
         <p class="date">last_update : {{ contract.date_updated }}</p>
 <table>
     {% if contract.name%}
@@ -43,11 +50,8 @@
         </tbody>
 </table>
     <div class=customer-buttons>
-    <a href="{% url 'contract_detail' contract.id %}"><button>See the contract</button></a>
-    {% if customer.status != 'ongoing' %}
-    <a href="{% url 'event_create' contract.id %}"><button>Add an event</button></a>
-        {% else %}
-            <br>
-    {% endif %}
+    <a href="{% url 'customer_detail' contract.customer_id.id %}"><button>See the customer</button></a>
+    <a href="{% url 'event_detail' contract.id %}"><button>See the event</button></a>
     </div>
 </div>
+{% endblock content %}

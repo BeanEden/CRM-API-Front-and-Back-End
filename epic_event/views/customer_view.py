@@ -67,9 +67,9 @@ class CustomerListView(APIView, PaginatedViewMixin):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
 @api_view(('GET', 'POST'))
 @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
+@login_required()
 def customer_create_view(request):
     if request.user.team == "support":
         flash = "You don't have permission to access this page"
@@ -91,17 +91,15 @@ def customer_create_view(request):
                   context={'serializer': serializer})
 
 
-
 @api_view(('GET', 'POST', 'DELETE'))
 @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
 def customer_detail_view(request, customer_id):
-    if request.user.team == "support":
-        flash = "You don't have permission to access this page"
-        return render(request, 'home.html', context={'flash': flash})
     customer = get_object_or_404(Customer, id=customer_id)
+    if request.user.team == "support":
+        return render(request, 'customer/customer_read_only.html', context={'customer': customer})
     serializer = CustomerDetailSerializer(customer)
     if "update_customer" in request.POST:
-        serializer = CustomerDetailSerializer(data=request.data)
+        serializer = CustomerDetailSerializer(data=request.data, instance=customer)
         if serializer.is_valid():
             serializer.save()
             name = str(customer)
@@ -118,7 +116,17 @@ def customer_detail_view(request, customer_id):
     return render(request, 'customer/customer_detail.html',
                   context={'serializer': serializer, 'customer': customer})
 
-#
+
+
+# @api_view(('GET',))
+# @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
+# def customer_detail_view(request, customer_id):
+#     contract = get_object_or_404(Contract, id=customer_id)
+#     return render(request, 'customer/contract_detail.html',
+#                   context={'customer': customer})
+
+
+
 # @login_required
 # def customer_delete(request, customer_id):
 #     customer = get_object_or_404(Customer, id=customer_id)

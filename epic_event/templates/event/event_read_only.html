@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load rest_framework %}
+
+{% block content %}
+        <div class="snippet">
+        <p class = "date">{{ event.date_updated }}</p>
+        <p>customer : {{ event.customer_id }}</p>
+        <p>attendees : {{ event.attendees }}</p>
+        <p>notes : {{ event.notes }}</p>
+        {% if user.team != 'sales' %}
+            <div class = "edit-button">
+                <a href="{% url 'event_detail' event.id %}"><button>Modifier</button></a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

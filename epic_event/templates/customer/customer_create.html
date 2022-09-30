@@ -8,7 +8,7 @@
 <form action="{% url 'customer_create' %}" method="POST">
     {% csrf_token %}
     {% render_form serializer %}
-    <input type="submit" value="Save">
+    <input type="submit" name="create" value="Save">
 </form>
     {{ request.user.team }}
 {% endblock content %}

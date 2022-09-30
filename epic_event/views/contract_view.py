@@ -98,49 +98,43 @@ def contract_create_view(request, customer_id=None):
     if request.user.team == "support":
         flash = "You don't have permission to access this page"
         return render(request, 'home.html', context={'flash': flash})
-    if customer_id:
-        customer = get_object_or_404(Customer, id=customer_id)
-        if request.user.team == "sales":
-            serializer = ContractDetailSerializer(data={
-                "sales_contact": request.user.id,
-                "customer_id": customer_id},
-                partial=True)
-            if serializer.is_valid():
-                return render(request, 'contract/contract_create.html',
-                              context={'serializer': serializer, 'customer':customer})
-        customer = get_object_or_404(Customer, id=customer_id)
-        serializer = ContractDetailSerializer()
-        if request.user.team == "management":
-            serializer = ContractDetailSerializer(data={
-                "sales_contact": customer.sales_contact.id,
-                "customer_id": customer_id},
-                partial=True)
-            if serializer.is_valid():
-                return render(request, 'contract/contract_create.html',
-                              context={'serializer': serializer, 'customer':customer})
-        if request.method == 'POST':
-            serializer = ContractDetailSerializer(data = request.data)
-            if serializer.is_valid():
-                serializer.save()
-                name = serializer.data["name"]
-                flash = "Contract " + name + "with customer" + str(customer) +" has been created"
-                return render(request, 'home.html', context={'flash': flash})
-    else:
-        serializer = ContractDetailSerializer()
-    return render(request, 'customer/customer_create.html',
-                  context={'serializer': serializer})
+    serializer = ContractDetailSerializer()
+    customer = get_object_or_404(Customer, id=customer_id)
+    if request.user.team == "sales":
+        serializer = ContractDetailSerializer(data={
+            "sales_contact": request.user.id,
+            "customer_id": customer_id},
+            partial=True)
+        serializer.is_valid()
+    if request.user.team == "management":
+        serializer = ContractDetailSerializer(data={
+            "sales_contact": customer.sales_contact.id,
+            "customer_id": customer_id},
+            partial=True)
+        serializer.is_valid()
+    if "create" in request.POST:
+        serializer = ContractDetailSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            customer.status = 'ongoing'
+            customer.save()
+            name = serializer.data["name"]
+            flash = "Contract " + name + "with customer" + str(customer) +" has been created"
+            return render(request, 'home.html', context={'flash': flash})
+    if serializer.is_valid():
+        return render(request, 'contract/contract_create.html',
+                      context={'serializer': serializer, 'customer':customer})
 
 
 @api_view(('GET', 'POST', 'DELETE'))
 @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
 def contract_detail_view(request, contract_id):
-    if request.user.team == "support":
-        flash = "You don't have permission to access this page"
-        return render(request, 'home.html', context={'flash': flash})
     contract = get_object_or_404(Contract, id=contract_id)
+    if request.user.team == "support":
+        return render(request, 'contract/contract_read_only.html', context={'contract': contract})
     serializer = ContractDetailSerializer(contract)
     if "update_contract" in request.POST:
-        serializer = ContractDetailSerializer(data=request.data)
+        serializer = ContractDetailSerializer(data=request.data, instance=contract)
         if serializer.is_valid():
             serializer.save()
             name = str(contract)
@@ -156,3 +150,11 @@ def contract_detail_view(request, contract_id):
         return render(request, 'home.html', context={'flash': flash})
     return render(request, 'contract/contract_detail.html',
                   context={'serializer': serializer, 'contract': contract})
+
+
+# @api_view(('GET','POST'))
+# @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
+# def contract_read_only_view(request, contract_id):
+#     contract = get_object_or_404(Contract, id=contract_id)
+#     return render(request, 'contract/contract_detail.html',
+#                   context={'contract': contract})

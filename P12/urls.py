@@ -9,7 +9,7 @@ from django.urls import path
 from epic_event.views.user_view import UserListView, UserCreateDetailView, UserDetailView
 from epic_event.views.customer_view import CustomerListView, CustomerCreateView, CustomerDetailView, customer_detail_view, customer_create_view
 from epic_event.views.contract_view import ContractListView, ContractCreateView, ContractDetailView, contract_create_view,contract_detail_view
-from epic_event.views.event_view import EventListView, EventCreateView, EventDetailView, event_create_view, event_detail_view
+from epic_event.views.event_view import EventListView, CustomerEventListView, EventDetailView, event_create_view, event_detail_view, customer_event_list_view
 import epic_event.views
 from epic_event.views.general_view import GlobalFeed
 from authentication.views import SignUpView
@@ -65,6 +65,9 @@ urlpatterns = [
     path('<int:event_id>/event_detail/', event_detail_view, name='event_detail'),
     path('event_create/', event_create_view,
          name='event_create_untied'),
+
+    path('<int:customer_id>/event_list/', CustomerEventListView.as_view(), name= 'customer_event_list'),
+    # path('')
     ]
 
 

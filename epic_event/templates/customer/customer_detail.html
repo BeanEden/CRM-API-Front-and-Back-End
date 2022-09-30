@@ -4,18 +4,18 @@
 {% block content %}
 
 <h1>Customer - {{ customer }}</h1>
- <!-- Rectangular switch -->
-<label class="switch">
-  <input type="checkbox">
-  <span class="slider"></span>
-</label>
-
-<!-- Rounded switch -->
-<label class="switch">
-  <input type="checkbox">
-  <span class="slider round"></span>
-</label>
-
+{# <!-- Rectangular switch -->#}
+{#<label class="switch">#}
+{#  <input type="checkbox">#}
+{#  <span class="slider"></span>#}
+{#</label>#}
+{##}
+{#<!-- Rounded switch -->#}
+{#<label class="switch">#}
+{#  <input type="checkbox">#}
+{#  <span class="slider round"></span>#}
+{#</label>#}
+<div class="customer form"></div>
 <form method="POST">
     {% csrf_token %}
     {% render_form serializer %}

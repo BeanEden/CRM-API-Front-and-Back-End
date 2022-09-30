@@ -14,6 +14,7 @@ from epic_event.serializers import EventDetailSerializer
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView
 from rest_framework import status
 
 User = get_user_model()
@@ -30,6 +31,41 @@ class EventListView(APIView, PaginatedViewMixin):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
+        queryset = Event.objects.all()
+        posts_paged = self.paginate_view(
+            request, sorted(queryset,
+                            key=lambda x: x.date_updated, reverse=False))
+        return Response({'events': posts_paged})
+
+
+class UserEventListView(APIView, PaginatedViewMixin):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'event/event_list.html'
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self, request):
+        if request.user.team == 'management':
+            queryset = Event.objects.all()
+        elif request.user.team == 'sales':
+            wanted_items = set()
+            for item in Customer.objects.filter(sales_contact=request.user):
+                wanted_items.add(item.id)
+            queryset = Event.objects.filter(pk__in=wanted_items)
+        else:
+            queryset = Event.objects.filter(support_contact=request.user)
+        posts_paged = self.paginate_view(
+            request, sorted(queryset,
+                            key=lambda x: x.date_updated, reverse=False))
+        return Response({'events': posts_paged})
+
+
+class CustomerEventListView(APIView, PaginatedViewMixin):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'event/event_list.html'
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self, request):
+        print(request.path)
         if request.user.team == 'management':
             queryset = Event.objects.all()
         elif request.user.team == 'sales':
@@ -49,10 +85,8 @@ class EventListView(APIView, PaginatedViewMixin):
 @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
 def event_create_view(request, contract_id=None):
     if request.user.team == "support":
-        serializer = EventDetailSerializer(data={"support_contact": request.user.id}, partial=True)
-        if serializer.is_valid():
-            return render(request, 'event/event_create.html',
-                          context={'serializer': serializer})
+        flash = "You don't have permission to access this page"
+        return render(request, 'home.html', context={'flash': flash})
     serializer = EventDetailSerializer()
     if request.method == 'POST':
         serializer = EventDetailSerializer(data = request.data)
@@ -68,9 +102,16 @@ def event_create_view(request, contract_id=None):
 @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
 def event_detail_view(request, event_id):
     event = get_object_or_404(Event, id=event_id)
+    if request.user.team == "support":
+        if request.user != event.support_contact :
+            return (render(request, 'event/event_read_only.html', context={'event': event}))
+    if request.user.team == "sales":
+        if request.user != event.contract_id.sales_contact:
+            return (render(request, 'event/event_read_only.html',
+                           context={'event': event}))
     serializer = EventDetailSerializer(event)
     if "update_event" in request.POST:
-        serializer = EventDetailSerializer(data=request.data)
+        serializer = EventDetailSerializer(data=request.data, instance=event)
         if serializer.is_valid():
             serializer.save()
             name = str(event)
@@ -86,7 +127,6 @@ def event_detail_view(request, event_id):
         return render(request, 'home.html', context={'flash': flash})
     return render(request, 'event/event_detail.html',
                   context={'serializer': serializer, 'event': event})
-
 
 
 class EventDetailView(APIView):

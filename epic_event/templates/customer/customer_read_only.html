@@ -1,3 +1,8 @@
+{% extends 'base.html' %}
+{% load rest_framework %}
+
+{% block content %}
+
 {% load static %}
 <div class="snippet">
         {% if  customer.status == 'prospect' %}
@@ -57,12 +62,9 @@
             </tr>
 </table>
     <div class=customer-buttons>
-        <a href="{% url 'customer_detail' customer.id %}"><button>Customer detail</button></a>
-        {% if customer.status == 'ongoing' %}
+
             <a href="{% url 'contract_list' %}"><button><img src="{% static 'images/contrat_list.png'%}">Ongoing contracts</button></a>
-        {% endif %}
-        <a href="{% url 'contract_create' customer.id %}"><button><img src="{% static 'images/add_contract.png'%}">Add a contract</button></a>
+                <a href="{% url 'customer_detail' customer.id %}"><button>Customer detail</button></a>
+    </div>
 </div>
-</div>
-    {#        {%  include "customer_detail" with customer_id=customer.id%}#}
-{#    </div>#}
+{% endblock content %}
