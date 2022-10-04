@@ -20,7 +20,7 @@ class Event(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
     attendees = models.IntegerField(blank=True)
-    event = models.DateTimeField(blank=True)
+    event_date = models.DateTimeField(blank=True)
     notes = models.TextField(blank=True, validators=[TEXT_REGEX])
 
     class Meta:

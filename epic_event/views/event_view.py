@@ -69,7 +69,20 @@ class CustomerEventListView(APIView, PaginatedViewMixin):
         posts_paged = self.paginate_view(
             request, sorted(queryset,
                             key=lambda x: x.date_updated, reverse=False))
-        return Response({'contracts': posts_paged})
+        return Response({'events': posts_paged})
+
+
+class AttributeEventListView(APIView, PaginatedViewMixin):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'event/event_list.html'
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, customer_id):
+        queryset = Event.objects.filter(support_contact=None)
+        posts_paged = self.paginate_view(
+            request, sorted(queryset,
+                            key=lambda x: x.date_updated, reverse=False))
+        return Response({'events': posts_paged})
 
 
 @api_view(('GET', 'POST'))
@@ -89,6 +102,8 @@ def event_create_view(request, contract_id):
         serializer = EventDetailSerializer(data = request.data)
         if serializer.is_valid():
             serializer.save()
+            contract.event_associated = "complete"
+            contract.save()
             flash = "Event " + str(serializer) + " has been successfully created"
             return render(request, 'home.html', context={'flash': flash})
     return render(request, 'event/event_create.html',
@@ -126,42 +141,32 @@ def event_detail_view(request, event_id):
                   context={'serializer': serializer, 'event': event})
 
 
-class EventDetailView(APIView):
-    renderer_classes = [TemplateHTMLRenderer]
-    template_name = 'event/event_detail.html'
-    permission_classes = [IsAuthenticated, IsManagementTeam]
-
-    def get(self, request, pk, format = None):
-        customer = get_object_or_404(Event, pk=pk)
-        serializer = EventDetailSerializer(customer)
-        return Response(serializer.data)
-
-    def put(self, request, pk, format=None):
-        event = get_object_or_404(Event, pk=pk)
-        serializer = EventDetailSerializer(event, data=request.data)
+@api_view(('GET', 'POST', 'DELETE'))
+@renderer_classes((TemplateHTMLRenderer, JSONRenderer))
+def contract_event_detail_view(request, contract_id):
+    event = get_object_or_404(Event, contract_id=contract_id)
+    if request.user.team == "support":
+        if request.user != event.support_contact :
+            return (render(request, 'event/event_read_only.html', context={'event': event}))
+    if request.user.team == "sales":
+        if request.user != event.contract_id.sales_contact:
+            return (render(request, 'event/event_read_only.html',
+                           context={'event': event}))
+    serializer = EventDetailSerializer(event)
+    if "update_event" in request.POST:
+        serializer = EventDetailSerializer(data=request.data, instance=event)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk, format=None):
-        event = get_object_or_404(Event, pk=pk)
+            name = str(event)
+            flash = name + " has been successfully updated"
+            return render(request, 'home.html', context={'flash': flash})
+    if "delete_event" in request.POST:
+        if request.user.team != "management":
+            flash = "You don't have permission to access this page"
+            return render(request, 'home.html', context={'flash': flash})
+        name = str(event)
         event.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-class EventCreateView(APIView):
-    renderer_classes = [TemplateHTMLRenderer]
-    template_name = 'event/event_create.html'
-    permission_classes = [IsAuthenticated, IsManagementTeam]
-
-    def get(self, request):
-        serializer = EventDetailSerializer()
-        return Response({'serializer': serializer})
-
-    def post(self, request):
-        serializer = EventDetailSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return redirect('user_list')
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        flash = name + " has been successfully deleted"
+        return render(request, 'home.html', context={'flash': flash})
+    return render(request, 'event/event_detail.html',
+                  context={'serializer': serializer, 'event': event})

@@ -10,7 +10,7 @@
         </thead>
             <tr>
                 <td class="td-infos">customer : </td>
-                <td>{{ contract.customer }}</td>
+                <td>{{ contract.customer_id }}</td>
             </tr>
     {% else %}
         <thead>
@@ -44,9 +44,10 @@
 </table>
     <div class=customer-buttons>
     <a href="{% url 'contract_detail' contract.id %}"><button>See the contract</button></a>
-    {% if customer.status != 'ongoing' %}
+    {% if contract.event != 'complete' %}
     <a href="{% url 'event_create' contract.id %}"><button>Add an event</button></a>
         {% else %}
+       <a href="{% url 'event_detail' contract.id %}"><button>Event associated</button></a>
     {% endif %}
     </div>
 </div>

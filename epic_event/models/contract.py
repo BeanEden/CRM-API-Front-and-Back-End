@@ -22,7 +22,7 @@ class Contract(models.Model):
     status = models.BooleanField(default=False)
     amount = models.FloatField(default=False)
     payment_due = models.DateTimeField(default=datetime.datetime.now())
-    # event = models.CharField(max_length=20, choices=CUSTOMER_PROFILE, default="uncomplete")
+    event_associated = models.CharField(max_length=20, choices=EVENT_STATUS, default="uncomplete")
     name = models.CharField(max_length=25, validators=[TEXT_REGEX], blank=True)
 
     class Meta:

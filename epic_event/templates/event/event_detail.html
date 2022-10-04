@@ -3,7 +3,7 @@
 
 {% block content %}
 
-<h1>Event - {{ event }}</h1>
+<h1>Event - {{ contract_id }}</h1>
 
 <form method="POST">
     {% csrf_token %}
@@ -12,7 +12,6 @@
 </form>
 
 {% if request.user.team == "management" %}
-{#<a href="{% url 'customer_delete' customer.id %}"><button>Delete customer</button></a>#}
 
 <div class="submit-form">
     <form method="POST" enctype="multipart/form-data">

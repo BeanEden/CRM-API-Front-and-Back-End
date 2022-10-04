@@ -41,7 +41,7 @@ class ContractListView(APIView, PaginatedViewMixin):
         posts_paged = self.paginate_view(
             request, sorted(queryset,
                             key=lambda x: x.date_updated, reverse=False))
-        return Response({'events': posts_paged})
+        return Response({'contracts': posts_paged})
 
 
 class UserContractListView(APIView, PaginatedViewMixin):
@@ -82,47 +82,6 @@ class CustomerContractListView(APIView, PaginatedViewMixin):
         return Response({'contracts': posts_paged})
 
 
-class ContractDetailView(APIView):
-    permission_classes = [IsAuthenticated, IsManagementTeam]
-    renderer_classes = [TemplateHTMLRenderer]
-    template_name = 'contract/contract_detail.html'
-
-
-    def get(self, request, pk):
-        contract = get_object_or_404(Contract, pk=pk)
-        serializer = ContractDetailSerializer(contract)
-        return Response(serializer.data)
-
-    def put(self, request, pk):
-        contract = get_object_or_404(Contract, pk=pk)
-        serializer = ContractDetailSerializer(contract, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk):
-        contract = get_object_or_404(Contract, pk=pk)
-        contract.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-class ContractCreateView(APIView):
-    renderer_classes = [TemplateHTMLRenderer]
-    template_name = 'contract/contract_create.html'
-
-    def get(self, request):
-        serializer = ContractDetailSerializer()
-        return Response({'serializer': serializer})
-
-    def post(self, request):
-        serializer = ContractDetailSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return redirect('event_create')
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 @api_view(('GET', 'POST'))
 @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
 def contract_create_view(request, customer_id):
@@ -150,7 +109,7 @@ def contract_create_view(request, customer_id):
             customer.status = 'ongoing'
             customer.save()
             name = serializer.data["name"]
-            flash = "Contract " + name + "with customer" + str(customer) +" has been created"
+            flash = "Contract " + name + " with customer " + str(customer) +" has successfully been created"
             return render(request, 'home.html', context={'flash': flash})
     return render(request, 'contract/contract_create.html',
                   context={'serializer': serializer, 'customer':customer})
@@ -180,11 +139,3 @@ def contract_detail_view(request, contract_id):
         return render(request, 'home.html', context={'flash': flash})
     return render(request, 'contract/contract_detail.html',
                   context={'serializer': serializer, 'contract': contract})
-
-
-# @api_view(('GET','POST'))
-# @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
-# def contract_read_only_view(request, contract_id):
-#     contract = get_object_or_404(Contract, id=contract_id)
-#     return render(request, 'contract/contract_detail.html',
-#                   context={'contract': contract})

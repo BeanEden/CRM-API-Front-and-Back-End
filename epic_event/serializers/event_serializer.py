@@ -14,6 +14,6 @@ class EventDetailSerializer(ModelSerializer):
                  'customer_id',
                  'contract_id',
                  'attendees',
-                 'event',
+                 'event_date',
                  'notes'
                  ]

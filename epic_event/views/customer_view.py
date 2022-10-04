@@ -17,7 +17,6 @@ from epic_event.models.contract import Contract
 from epic_event.models.customer import Customer
 from epic_event.serializers import UserDetailSerializer
 from epic_event.serializers import CustomerDetailSerializer
-from epic_event.forms import CustomerForm, DeleteBlogForm
 
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
