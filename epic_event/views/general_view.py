@@ -55,43 +55,104 @@ class PaginatedViewMixin:
 
 # ---------------------------HOME AND USER PAGES---------------------------#
 
-class GlobalFeed(LoginRequiredMixin, View, PaginatedViewMixin):
+class GlobalFeed(LoginRequiredMixin, APIView, PaginatedViewMixin):
     """Class view used to generate a paginated list of all tickets and reviews
     ordered chronologically (soonest first)
     """
     template_name = 'home.html'
 
-    def get(self, request):
+    def get(self, request, **kwargs):
         """
         argument: GET request
         return: url + page_object (= paginated posts)
         """
-
-        if request.user.team == 'support':
-            events = Event.objects.filter(support_contact=request.user)
-
-            posts_paged = self.paginate_view(
-                request, sorted(events,
-                                key=lambda x: x.date_updated, reverse=True))
-            return render(request, self.template_name,
-                          context={'page_obj': posts_paged})
-        if request.user.team == 'sales':
-            customers = Customer.objects.filter(sales_contact=request.user)
-            contracts = Contract.objects.filter(sales_contact=request.user)
-            posts_paged = self.paginate_view(
-                request, sorted(chain(customers, contracts),
-                                key=lambda x: x.date_updated, reverse=True))
-            return render(request, self.template_name,
-                          context={'page_obj': posts_paged})
+        customers = Customer.objects.all()
+        contracts = Contract.objects.all()
+        events = Event.objects.all()
+        posts_paged = self.paginate_view(
+            request, sorted(chain(customers, contracts, events),
+                            key=lambda x: x.date_updated, reverse=True))
+        return render(request, self.template_name,
+                      context={'page_obj': posts_paged})
 
 
-        if request.user.team == 'management':
-            customers = Customer.objects.all()
-            contracts = Contract.objects.all()
-            events = Event.objects.all()
-            posts_paged = self.paginate_view(
-                request, sorted(chain(customers, contracts, events),
-                                key=lambda x: x.date_updated, reverse=True))
-            return render(request, self.template_name,
-                          context={'page_obj': posts_paged})
+class GlobalSearch(LoginRequiredMixin, APIView, PaginatedViewMixin):
+    """Class view used to generate a paginated list of all tickets and reviews
+    ordered chronologically (soonest first)
+    """
+    template_name = 'home.html'
 
+    def get(self, request, **kwargs):
+        """
+        argument: GET request
+        return: url + page_object (= paginated posts)
+        """
+        customers = Customer.objects.all()
+        contracts = Contract.objects.all()
+        events = Event.objects.all()
+        posts_paged = self.paginate_view(
+            request, sorted(chain(customers, contracts, events),
+                            key=lambda x: x.date_updated, reverse=True))
+        return render(request, self.template_name,
+                      context={'page_obj': posts_paged})
+
+
+# class GlobalFeed(LoginRequiredMixin, ListView, PaginatedViewMixin):
+#     """Class view used to generate a paginated list of all tickets and reviews
+#     ordered chronologically (soonest first)
+#     """
+#     template_name = 'home.html'
+#
+#     def get_queryset(self):
+#         """
+#         argument: GET request
+#         return: url + page_object (= paginated posts)
+#         """
+#         print(self.request.query_para)
+#         customers = Customer.objects.all()
+#         contracts = Contract.objects.all()
+#         events = Event.objects.all()
+#         posts_paged = self.paginate_view(self.request,
+#             sorted(chain(customers, contracts, events),
+#                             key=lambda x: x.date_updated, reverse=True))
+#         return posts_paged
+
+#
+# class GlobalFeed(LoginRequiredMixin, View, PaginatedViewMixin):
+#     """Class view used to generate a paginated list of all tickets and reviews
+#     ordered chronologically (soonest first)
+#     """
+#     template_name = 'home.html'
+#
+#     def get(self, request):
+#         """
+#         argument: GET request
+#         return: url + page_object (= paginated posts)
+#         """
+#
+#         if request.user.team == 'support':
+#             events = Event.objects.filter(support_contact=request.user)
+#
+#             posts_paged = self.paginate_view(
+#                 request, sorted(events,
+#                                 key=lambda x: x.date_updated, reverse=True))
+#             return render(request, self.template_name,
+#                           context={'page_obj': posts_paged})
+#         if request.user.team == 'sales':
+#             customers = Customer.objects.filter(sales_contact=request.user)
+#             contracts = Contract.objects.filter(sales_contact=request.user)
+#             posts_paged = self.paginate_view(
+#                 request, sorted(chain(customers, contracts),
+#                                 key=lambda x: x.date_updated, reverse=True))
+#             return render(request, self.template_name,
+#                           context={'page_obj': posts_paged})
+#
+#         if request.user.team == 'management':
+#             customers = Customer.objects.all()
+#             contracts = Contract.objects.all()
+#             events = Event.objects.all()
+#             posts_paged = self.paginate_view(
+#                 request, sorted(chain(customers, contracts, events),
+#                                 key=lambda x: x.date_updated, reverse=True))
+#             return render(request, self.template_name,
+#                           context={'page_obj': posts_paged})

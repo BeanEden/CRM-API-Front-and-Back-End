@@ -80,16 +80,17 @@ WSGI_APPLICATION = 'P12.wsgi.application'
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'dbname',
+#         'NAME': 'db_epic_event',
 #         'USER': 'M4inuser',
 #
 #         'PASSWORD': 'B4dapple!',
 #
-#         'HOST': 'http://127.0.0.1:8000/',
+#         'HOST': 'localhost',
 #
-#         'PORT': '',
+#         'PORT': '5432',
 #     }
 # }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -127,6 +128,11 @@ USE_I18N = True
 
 USE_TZ = True
 
+
+# REST_FRAMEWORK = {
+#     'DEFAULT_PAGINATION_CLASS' : 'rest_framework.pagination.LimitOffsetPagination',
+#     'PAGE_SIZE' : 5,
+# }
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/

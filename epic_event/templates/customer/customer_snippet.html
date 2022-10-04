@@ -59,10 +59,12 @@
     <div class=customer-buttons>
         <a href="{% url 'customer_detail' customer.id %}"><button>Customer detail</button></a>
         {% if customer.status == 'ongoing' %}
-            <a href="{% url 'contract_list' %}"><button><img src="{% static 'images/contrat_list.png'%}">Ongoing contracts</button></a>
+            <a href="{% url 'customer_contract_list' customer.id%}"><button><img src="{% static 'images/contrat_list.png'%}">Ongoing contracts</button></a>
         {% endif %}
+        {% if request.user.team != 'support' %}
         <a href="{% url 'contract_create' customer.id %}"><button><img src="{% static 'images/add_contract.png'%}">Add a contract</button></a>
-</div>
+        {% endif %}
+    </div>
 </div>
     {#        {%  include "customer_detail" with customer_id=customer.id%}#}
 {#    </div>#}

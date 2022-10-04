@@ -64,38 +64,35 @@ class CustomerEventListView(APIView, PaginatedViewMixin):
     template_name = 'event/event_list.html'
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self, request):
-        print(request.path)
-        if request.user.team == 'management':
-            queryset = Event.objects.all()
-        elif request.user.team == 'sales':
-            wanted_items = set()
-            for item in Customer.objects.filter(sales_contact=request.user):
-                wanted_items.add(item.id)
-            queryset = Event.objects.filter(pk__in=wanted_items)
-        else:
-            queryset = Event.objects.filter(support_contact=request.user)
+    def get(self, request, customer_id):
+        queryset = Event.objects.filter(customer_id=customer_id)
         posts_paged = self.paginate_view(
             request, sorted(queryset,
                             key=lambda x: x.date_updated, reverse=False))
-        return Response({'events': posts_paged})
+        return Response({'contracts': posts_paged})
 
 
 @api_view(('GET', 'POST'))
 @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
-def event_create_view(request, contract_id=None):
+def event_create_view(request, contract_id):
     if request.user.team == "support":
         flash = "You don't have permission to access this page"
         return render(request, 'home.html', context={'flash': flash})
+    contract = get_object_or_404(Contract, id=contract_id)
     serializer = EventDetailSerializer()
+    serializer = EventDetailSerializer(data={
+        "customer_id": contract.customer_id.id,
+        "contract_id": contract.id},
+        partial=True)
+    serializer.is_valid()
     if request.method == 'POST':
         serializer = EventDetailSerializer(data = request.data)
         if serializer.is_valid():
             serializer.save()
-            flash = "Event " + str(serializer) + "has successfully been created"
+            flash = "Event " + str(serializer) + " has been successfully created"
             return render(request, 'home.html', context={'flash': flash})
     return render(request, 'event/event_create.html',
-                  context={'serializer': serializer})
+                  context={'serializer': serializer, "contract": contract})
 
 
 @api_view(('GET', 'POST', 'DELETE'))
@@ -117,7 +114,7 @@ def event_detail_view(request, event_id):
             name = str(event)
             flash = name + " has been successfully updated"
             return render(request, 'home.html', context={'flash': flash})
-    if "delete_contract" in request.POST:
+    if "delete_event" in request.POST:
         if request.user.team != "management":
             flash = "You don't have permission to access this page"
             return render(request, 'home.html', context={'flash': flash})

@@ -85,7 +85,7 @@ def customer_create_view(request):
         if serializer.is_valid():
             serializer.save()
             name = serializer.data["first_name"] +' '+ serializer.data["last_name"]
-            flash = "Customer " + name + "has been created"
+            flash = "Customer " + name + " has been successfully created"
             return render(request, 'home.html', context={'flash': flash})
     return render(request, 'customer/customer_create.html',
                   context={'serializer': serializer})

@@ -4,6 +4,7 @@
         <title>EPIC EVENT</title>
         <link rel="stylesheet" href="{% static 'app.css' %}">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     </head>
 <body>
         <div class="topnav">
@@ -38,7 +39,6 @@
                     <button class="dropbtn">Contracts<i class="fa fa-caret-down"></i></button>
                         <div class="dropdown-content">
                           <a href="{% url 'contract_list' %}">Browse</a>
-                            <a href="{% url 'contract_create_untied' %}">New</a>
                         </div>
                 </div>
                 <div class="dropdown">
@@ -52,11 +52,19 @@
                     <button class="dropbtn">Events<i class="fa fa-caret-down"></i></button>
                         <div class="dropdown-content">
                           <a href="{% url 'event_list' %}">Browse</a>
-                            <a href="{% url 'event_create_untied' %}">New</a>
+{#                            <a href="{% url 'event_create_untied' %}">New</a>#}
                         </div>
                 </div>
                 <a href="{% url 'home' %}">Accueil</a>
-                <input type="text" placeholder="Search..">
+
+
+                <div class="submit-form">
+                <form method="POST" enctype="multipart/form-data">
+                    <input type="text" name="searchbar" placeholder="Search.."><button>search</button>
+                    {% csrf_token %}
+                </form>
+                </div>
+
             {% endif %}
         </div>
         <div class="main">

@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load rest_framework %}
+{% load review_extras %}
 {% block content %}
     <h2>Customer List of {{ request.user.first_name }} {{ request.user.last_name }} - {{ request.user.team }}</h2>
     <div class="grid-container">
@@ -14,10 +15,6 @@
             </div>
         {% endif %}
     {% endfor %}
-
     </div>
      {% include 'partials\page_navigator.html' %}
-
-
-
 {% endblock content %}

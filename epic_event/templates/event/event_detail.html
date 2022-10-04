@@ -4,17 +4,6 @@
 {% block content %}
 
 <h1>Event - {{ event }}</h1>
- <!-- Rectangular switch -->
-<label class="switch">
-  <input type="checkbox">
-  <span class="slider"></span>
-</label>
-
-<!-- Rounded switch -->
-<label class="switch">
-  <input type="checkbox">
-  <span class="slider round"></span>
-</label>
 
 <form method="POST">
     {% csrf_token %}
@@ -31,6 +20,6 @@
         {% csrf_token %}
         <input type="submit" name="delete_event" value="Delete">
     </form>
-    </div>
+</div>
     {% endif %}
 {% endblock content %}

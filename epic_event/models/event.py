@@ -19,8 +19,8 @@ class Event(models.Model):
                                     blank=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
-    attendees = models.IntegerField()
-    event = models.DateTimeField()
+    attendees = models.IntegerField(blank=True)
+    event = models.DateTimeField(blank=True)
     notes = models.TextField(blank=True, validators=[TEXT_REGEX])
 
     class Meta:
@@ -30,5 +30,5 @@ class Event(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        contract = Contract.objects.filter(id=self.contract_id)
-        return str(contract) +" event"
+        print("contract_id", self.contract_id.name)
+        return str(self.contract_id) +" event"

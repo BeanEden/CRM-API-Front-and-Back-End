@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load rest_framework %}
-
+{% load static %}
 {% block content %}
 
 <h1>Customer - {{ customer }}</h1>
@@ -33,4 +33,9 @@
     </form>
     </div>
     {% endif %}
+        <div class=customer-buttons>
+        <a href="{% url 'contract_create' customer.id %}"><button><img src="{% static 'images/add_contract.png'%}">Add a contract</button></a>
+            <a href="{% url 'contract_list' %}"><button><img src="{% static 'images/contrat_list.png'%}">Ongoing contracts</button></a>
+                <a href="{% url 'customer_event_list' customer.id %}"><button>Events associated</button></a>
+    </div>
 {% endblock content %}

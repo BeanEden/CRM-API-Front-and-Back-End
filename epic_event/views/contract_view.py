@@ -28,7 +28,7 @@ from epic_event.views.general_view import PaginatedViewMixin
 def get_path(request):
     path = request.path_info
     split_path = path.split('/')
-    print(split_path)
+    return split_path
 
 
 class ContractListView(APIView, PaginatedViewMixin):
@@ -37,18 +37,49 @@ class ContractListView(APIView, PaginatedViewMixin):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        get_path(request)
-        serializer = ContractDetailSerializer()
-        if request.user.team == "management" or "sales":
+        queryset = Contract.objects.all()
+        posts_paged = self.paginate_view(
+            request, sorted(queryset,
+                            key=lambda x: x.date_updated, reverse=False))
+        return Response({'events': posts_paged})
+
+
+class UserContractListView(APIView, PaginatedViewMixin):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'contract/contract_list.html'
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        if request.user.team == 'management':
             queryset = Contract.objects.all()
-            posts_paged = self.paginate_view(
-                request, sorted(queryset,
-                                key=lambda x: x.date_updated, reverse=False))
-            return Response(
-                {'contracts': posts_paged, 'serializer': serializer})
+        elif request.user.team == "sales":
+            queryset = Contract.objects.filter(sales_contact=request.user)
+        elif request.user.team == "support":
+            wanted_items = set()
+            for item in Event.objects.filter(support_contact=request.user):
+                wanted_items.add(item.id)
+            queryset = Contract.objects.filter(pk__in=wanted_items)
         else:
             flash = "You don't have permission to access this page"
             return redirect('home')
+        posts_paged = self.paginate_view(
+            request, sorted(queryset,
+                            key=lambda x: x.date_updated, reverse=False))
+        return Response(
+            {'contracts': posts_paged})
+
+
+class CustomerContractListView(APIView, PaginatedViewMixin):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'contract/contract_list.html'
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, customer_id):
+        queryset = Contract.objects.filter(customer_id=customer_id)
+        posts_paged = self.paginate_view(
+            request, sorted(queryset,
+                            key=lambda x: x.date_updated, reverse=False))
+        return Response({'contracts': posts_paged})
 
 
 class ContractDetailView(APIView):
@@ -94,7 +125,7 @@ class ContractCreateView(APIView):
 
 @api_view(('GET', 'POST'))
 @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
-def contract_create_view(request, customer_id=None):
+def contract_create_view(request, customer_id):
     if request.user.team == "support":
         flash = "You don't have permission to access this page"
         return render(request, 'home.html', context={'flash': flash})
@@ -121,9 +152,8 @@ def contract_create_view(request, customer_id=None):
             name = serializer.data["name"]
             flash = "Contract " + name + "with customer" + str(customer) +" has been created"
             return render(request, 'home.html', context={'flash': flash})
-    if serializer.is_valid():
-        return render(request, 'contract/contract_create.html',
-                      context={'serializer': serializer, 'customer':customer})
+    return render(request, 'contract/contract_create.html',
+                  context={'serializer': serializer, 'customer':customer})
 
 
 @api_view(('GET', 'POST', 'DELETE'))

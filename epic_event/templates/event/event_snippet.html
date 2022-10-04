@@ -1,11 +1,13 @@
     <div class="snippet">
         <p class = "date">{{ event.date_updated }}</p>
         <p>customer : {{ event.customer_id }}</p>
+        <p>contract :  {{ event.contract_id }}</p>
         <p>attendees : {{ event.attendees }}</p>
         <p>notes : {{ event.notes }}</p>
+      <div class = "customer-button">
+        <a href="{% url 'event_detail' event.id %}"><button>See the event</button></a>
         {% if user.team != 'sales' %}
-            <div class = "edit-button">
                 <a href="{% url 'event_detail' event.id %}"><button>Modifier</button></a>
-            </div>
         {% endif %}
+                  </div>
     </div>

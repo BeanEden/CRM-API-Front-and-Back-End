@@ -3,7 +3,11 @@
 {% block content %}
     <div class = "top-button">
     </div>
+    {%  if search %}
+    <h2> Recherche pour "{{ search }}"</h2></h>
+    {% else %}
     <h2>Derniers posts</h2>
+    {% endif %}
     <div class="feed">
         {% for instance in page_obj %}
             {% if instance|model_type == 'User' %}

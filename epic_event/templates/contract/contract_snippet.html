@@ -38,7 +38,7 @@
             </tr>
             <tr>
                 <td class="td-infos">status</td>
-                <td>{{ contract.status }}</td>
+                <td>{{ contract.status }} contract = {{ contract.id }}</td>
             </tr>
         </tbody>
 </table>
@@ -47,7 +47,6 @@
     {% if customer.status != 'ongoing' %}
     <a href="{% url 'event_create' contract.id %}"><button>Add an event</button></a>
         {% else %}
-            <br>
     {% endif %}
     </div>
 </div>

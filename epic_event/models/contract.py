@@ -4,6 +4,12 @@ from django.conf import settings
 from django.db import models
 from .customer import Customer
 from django.core.validators import validate_slug
+from django.core.validators import RegexValidator
+
+
+TEXT_REGEX = RegexValidator(regex='[a-zA-Z0-9\s]',
+                            message='characters must be Alphanumeric')
+
 EVENT_STATUS = [('complete', 'COMPLETE'),
              ('uncomplete', 'UNCOMPLETE')]
 
@@ -17,7 +23,7 @@ class Contract(models.Model):
     amount = models.FloatField(default=False)
     payment_due = models.DateTimeField(default=datetime.datetime.now())
     # event = models.CharField(max_length=20, choices=CUSTOMER_PROFILE, default="uncomplete")
-    name = models.CharField(max_length=25, validators=[validate_slug], blank=True)
+    name = models.CharField(max_length=25, validators=[TEXT_REGEX], blank=True)
 
     class Meta:
         ordering = ['-date_updated']
