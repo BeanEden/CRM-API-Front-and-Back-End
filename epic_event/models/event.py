@@ -3,6 +3,8 @@ from django.db import models
 from .customer import Customer
 from .contract import Contract
 from django.core.validators import RegexValidator
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 
 TEXT_REGEX = RegexValidator(regex='[a-zA-Z0-9\s]',
@@ -32,3 +34,4 @@ class Event(models.Model):
     def __str__(self):
         print("contract_id", self.contract_id.name)
         return str(self.contract_id) +" event"
+

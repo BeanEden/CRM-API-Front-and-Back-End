@@ -5,6 +5,17 @@
 
 <h1>Contract - {{ contract }}</h1>
 
+    {%  if request.user.team != "support" %}
+    <label class="switch">
+    <form method="POST">
+            {% csrf_token %}
+  <input type="submit" name="read_only" value = "update_mode_on">
+  <span class="slider round"></span>
+    </form>
+</label>
+    {% endif %}
+
+
 <div class="snippet">
         <p class="date">last_update : {{ contract.date_updated }}</p>
 <table>
@@ -54,4 +65,5 @@
     <a href="{% url 'event_detail' contract.id %}"><button>See the event</button></a>
     </div>
 </div>
+
 {% endblock content %}

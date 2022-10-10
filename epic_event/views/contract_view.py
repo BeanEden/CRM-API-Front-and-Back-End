@@ -121,7 +121,19 @@ def contract_detail_view(request, contract_id):
     contract = get_object_or_404(Contract, id=contract_id)
     if request.user.team == "support":
         return render(request, 'contract/contract_read_only.html', context={'contract': contract})
+    if "read_only" in request.POST:
+        if request.POST['read_only'] == "update_mode_off":
+            return render(request, 'contract/contract_read_only.html',
+                      context={'contract': contract})
+        if request.POST['read_only'] == "update_mode_on":
+            pass
+
     serializer = ContractDetailSerializer(contract)
+    if contract.event_associated == "complete":
+        event = get_object_or_404(Event, contract_id=contract)
+        context = {'serializer': serializer, 'contract': contract, 'event':event}
+    else :
+        context = {'serializer': serializer, 'contract': contract}
     if "update_contract" in request.POST:
         serializer = ContractDetailSerializer(data=request.data, instance=contract)
         if serializer.is_valid():
@@ -138,4 +150,4 @@ def contract_detail_view(request, contract_id):
         flash = "Contract " + str(name) + " has been successfully deleted"
         return render(request, 'home.html', context={'flash': flash})
     return render(request, 'contract/contract_detail.html',
-                  context={'serializer': serializer, 'contract': contract})
+                  context=context)

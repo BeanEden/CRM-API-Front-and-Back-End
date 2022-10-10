@@ -92,7 +92,6 @@ def event_create_view(request, contract_id):
         flash = "You don't have permission to access this page"
         return render(request, 'home.html', context={'flash': flash})
     contract = get_object_or_404(Contract, id=contract_id)
-    serializer = EventDetailSerializer()
     serializer = EventDetailSerializer(data={
         "customer_id": contract.customer_id.id,
         "contract_id": contract.id},

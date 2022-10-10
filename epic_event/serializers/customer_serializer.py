@@ -24,5 +24,6 @@ class CustomerDetailSerializer(ModelSerializer):
                  'email',
                  'phone',
                  'mobile',
-                 'company_name'
+                 'company_name',
+                  'status'
                   ]

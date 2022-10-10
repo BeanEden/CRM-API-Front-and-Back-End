@@ -5,6 +5,14 @@
 
 <h1>Contract - {{ contract }}</h1>
 
+<label class="switch">
+    <form method="POST">
+            {% csrf_token %}
+  <input type="submit" name="read_only" value = "update_mode_off">
+  <span class="slider round"></span>
+    </form>
+</label>
+
 <form method="POST">
     {% csrf_token %}
     {% render_form serializer %}
@@ -18,4 +26,11 @@
         <input type="submit" name="delete_contract" value="Delete">
     </form>
     </div>
+
+        {% if contract.event_associated == "uncomplete" %}
+        <a href="{% url 'event_create' contract.id %}"><button>Add an event</button></a>
+        {% else %}
+        <p> a {{contract.event_associated}} contract.id</p>
+        {% include 'event/event_snippet.html' with contract=contract %}
+    {% endif %}
 {% endblock content %}
