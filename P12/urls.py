@@ -7,11 +7,11 @@ from django.urls import path
 
 # from epic_event.views import SignUpView
 from epic_event.views.user_view import UserListView, UserCreateDetailView, UserDetailView
-from epic_event.views.customer_view import CustomerListView, CustomerCreateView, CustomerDetailView, customer_detail_view, customer_create_view
+from epic_event.views.customer_view import CustomerListView, customer_detail_view, customer_create_view
 from epic_event.views.contract_view import ContractListView, CustomerContractListView, UserContractListView, contract_create_view,contract_detail_view
 from epic_event.views.event_view import EventListView, CustomerEventListView, UserEventListView, event_create_view, event_detail_view, contract_event_detail_view
 import epic_event.views
-from epic_event.views.general_view import GlobalFeed, GlobalSearch
+from epic_event.views.general_view import GlobalFeed
 from authentication.views import SignUpView
 
 urlpatterns = [
@@ -37,7 +37,6 @@ urlpatterns = [
     # --------------------------HOME AND USER PAGES--------------------------#
 
     path('home/', GlobalFeed.as_view(), name='home'),
-    path('home/<str:search>/', GlobalSearch.as_view(), name='search'),
     # path('event_list/', epic_event.views.EventListView.as_view(), name='event_list'),
     path('user_list/', UserListView.as_view(), name='user_list'),
     path('user_create/', SignUpView.as_view(), name='user_create'),

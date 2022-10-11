@@ -1,2 +1,2 @@
-from .customer_view import CustomerDetailView, CustomerListView, CustomerCreateView
+from .customer_view import CustomerListView
 from .user_view import UserListView, UserCreateDetailView

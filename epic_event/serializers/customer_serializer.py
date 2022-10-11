@@ -1,29 +1,34 @@
-from rest_framework.serializers import ModelSerializer, SerializerMethodField
-
+from rest_framework.serializers import ModelSerializer, SerializerMethodField, ChoiceField
+from django.contrib.auth import get_user_model
 from epic_event.models.customer import Customer
 
+User = get_user_model()
+
+def get_sales_contact():
+    queryset = User.objects.filter(team='sales')
+    return queryset
 
 class CustomerDetailSerializer(ModelSerializer):
-    # sales_contact = SerializerMethodField('_is_my_find')
-    #
-    # def get_sales_contact(self, sales_contact_id):
-    #     return setattr(sales_contact_id, 'sales_contact', "")
-    #
-    # def _is_my_find(self, obj):
-    #     user_id = self.context.get("user_id")
-    #     if user_id:
-    #         return user_id in obj.my_objects.values_list("user_id", flat=True)
-    #     return False
+
+    sales_contact = ChoiceField(choices=get_sales_contact(),allow_null=True)
 
     class Meta:
         model = Customer
         fields = ['id',
-                 'sales_contact',
-                 'first_name',
-                 'last_name',
-                 'email',
-                 'phone',
-                 'mobile',
-                 'company_name',
+                  'sales_contact',
+                  'company_name',
+                  'first_name',
+                  'last_name',
+                  'email',
+                  'phone',
+                  'mobile',
                   'status'
                   ]
+
+        extra_kwargs = {
+            'status': {'read_only': True},
+            'amount': {'error_messages': {"min"}}
+        }
+
+
+

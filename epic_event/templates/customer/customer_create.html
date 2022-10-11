@@ -8,6 +8,6 @@
 <form action="{% url 'customer_create' %}" method="POST">
     {% csrf_token %}
     {% render_form serializer %}
-    <input type="submit" name="create" value="Save">
+    <input type="submit" name="create_customer" value="Save">
 </form>
 {% endblock content %}

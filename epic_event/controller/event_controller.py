@@ -25,19 +25,16 @@ from epic_event.permissions import IsManagementTeam
 from epic_event.views.general_view import PaginatedViewMixin
 
 
-
-@api_view(('GET', 'POST', 'DELETE'))
-@renderer_classes((TemplateHTMLRenderer, JSONRenderer))
-def event_detail_view(request, event_id):
-    event = get_object_or_404(Event, id=event_id)
-    event_permission_redirect_read_only(request=request, event=event)
-    serializer = EventDetailSerializer(event)
-    if "update_event" in request.POST:
-        update_event(request=request, event=event, serializer=serializer)
-    if "delete_event" in request.POST:
-        delete_event(request=request, event=event)
-    return render(request, 'event/event_detail.html',
-                  context={'serializer': serializer, 'event': event})
+def create_event(request, contract):
+    serializer = EventDetailSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        contract.event_associated = "complete"
+        contract.save()
+        flash = "Event " + str(serializer) + " has been successfully created"
+        return render(request, 'home.html', context={'flash': flash})
+    else:
+        pass
 
 
 def create_event_permission_redirect(request):
@@ -48,7 +45,12 @@ def create_event_permission_redirect(request):
         pass
 
 
-
+def create_event_check_contract_already_has_an_event_redirect(request, contract):
+    if contract.event_associated == "complete":
+        flash = "This contract already has an event"
+        return render(request, 'home.html', context={'flash': flash})
+    else:
+        pass
 
 
 def event_permission_redirect_read_only(request, event):
@@ -66,6 +68,7 @@ def event_permission_redirect_read_only(request, event):
 def update_event(request, event):
     serializer = EventDetailSerializer(data=request.data, instance=event)
     if serializer.is_valid():
+        # serializer.validated_data()
         serializer.save()
         name = str(event)
         flash = name + " has been successfully updated"
@@ -82,3 +85,14 @@ def delete_event(request, event):
     event.delete()
     flash = name + " has been successfully deleted"
     return render(request, 'home.html', context={'flash': flash})
+
+def create_event_serializer_filling(request, contract):
+    serializer = EventDetailSerializer(data={
+        "customer_id": contract.customer_id.id,
+        "contract_id": contract.id},
+        partial=True)
+    serializer.is_valid()
+    serializer.extr
+    serializer.get_extra_kwargs(extra_kwargs = {"customer_id":{'read_only':True}})
+
+    return serializer

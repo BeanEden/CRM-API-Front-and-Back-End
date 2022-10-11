@@ -1,31 +1,38 @@
 from django.conf import settings
 from django.db import models
 from django.core.validators import validate_slug
+from django.core.validators import RegexValidator
 
+TEXT_REGEX = RegexValidator(regex='[a-zA-Z0-9\s]',
+                            message='characters must be Alphanumeric')
+
+PHONE_REGEX = RegexValidator(regex='[+0-9]',
+                             message='phone number must contain digits')
 
 CUSTOMER_STATUS = [('prospect', 'PROSPECT'),
              ('ongoing', 'EN COURS'),
              ('unactive', 'NON ACTIF'),
               ('blacklisted', 'BLACKLIST')]
 
-CUSTOMER_PROFILE = [('complete', 'COMPLETE'),
-             ('uncomplete', 'UNCOMPLETE')]
+CUSTOMER_PROFILE = [('uncomplete', 'UNCOMPLETE'),
+                    ('complete', 'COMPLETE')
+             ]
 
 
 class Customer(models.Model):
     sales_contact = models.ForeignKey(
         to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
         related_name='sales_user_assigned')
-    first_name = models.CharField(max_length=25, validators=[validate_slug], blank=True)
-    last_name = models.CharField(max_length=25, validators=[validate_slug], blank=True)
+    first_name = models.CharField(max_length=25, validators=[TEXT_REGEX], blank=True)
+    last_name = models.CharField(max_length=25, validators=[TEXT_REGEX], blank=True)
     email = models.EmailField(max_length=100, blank=True)
-    phone = models.CharField(max_length=25, validators=[validate_slug], blank=True)
-    mobile = models.CharField(max_length=25, validators=[validate_slug], blank=True)
-    company_name = models.CharField(max_length=25, validators=[validate_slug], blank=True)
+    phone = models.CharField(max_length=25, validators=[PHONE_REGEX], blank=True)
+    mobile = models.CharField(max_length=25, validators=[PHONE_REGEX], blank=True)
+    company_name = models.CharField(max_length=25, validators=[TEXT_REGEX], blank=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
-    status = models.CharField(max_length=20, choices=CUSTOMER_STATUS, default="prospect")
-    profile = models.CharField(max_length=20, choices=CUSTOMER_PROFILE, default="uncomplete")
+    status = models.CharField(max_length=20, choices=CUSTOMER_STATUS, default=CUSTOMER_STATUS[0][0])
+    profile = models.CharField(max_length=20, choices=CUSTOMER_PROFILE, default=CUSTOMER_PROFILE[0][0])
 
     class Meta:
         ordering = ['-date_updated']
@@ -39,26 +46,17 @@ class Customer(models.Model):
         name = self.first_name + ' '+self.last_name
         return str(name)
 
-
-
-
-
-
-#
-# class UserFollows(models.Model):
-#     """relationship between two serializers (followed/following)
-#     linked in ManytoManyfield to User.subscriptions
-#     (list of all people followed by the user)"""
-#
-#     user = models.ForeignKey(
-#         to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
-#         related_name='following')
-#     followed_user = models.ForeignKey(
-#         to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
-#         related_name='followed_by')
-#
-#     class Meta:
-#         unique_together = ('user', 'followed_user')
-#
-#     def save(self, *args, **kwargs):
-#         super().save(*args, **kwargs)
+    def checking_status(self, contract_list):
+        if self.status == CUSTOMER_STATUS[3][0]:
+            pass
+        elif len(contract_list) == 0:
+            self.status = CUSTOMER_STATUS[0][0]
+        else:
+            ongoing_contracts = 0
+            for i in contract_list:
+                if i.status:
+                    self.status = CUSTOMER_STATUS[1][0]
+                    ongoing_contracts += 1
+            if ongoing_contracts == 0:
+                self.status = CUSTOMER_STATUS[2][0]
+        self.save()

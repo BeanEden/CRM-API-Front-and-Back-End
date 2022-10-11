@@ -5,7 +5,6 @@
 
 <h1>Create a new contract</h1>
 
-    {{ serializer}}
 <form action="{% url 'contract_create' customer.id %}" method="POST">
     {% csrf_token %}
     {% render_form serializer %}

@@ -3,11 +3,11 @@ from django.db import models
 from django.core.validators import validate_slug
 from django.contrib.auth.password_validation import validate_password
 
+TEAMS = ['management', 'sales', 'support']
 
-
-USER_TEAM = [('management', 'GESTION'),
-             ('sales', 'VENTE'),
-             ('support', 'SUPPORT')]
+USER_TEAM = [(TEAMS[0], 'GESTION'),
+             (TEAMS[1], 'VENTE'),
+             (TEAMS[2], 'SUPPORT')]
 
 
 class User(AbstractUser):

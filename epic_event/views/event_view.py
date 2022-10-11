@@ -1,28 +1,26 @@
-from itertools import chain
-
 from django.contrib.auth import get_user_model
-
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, render
+from django.contrib.auth.decorators import login_required
 
 from epic_event.models.event import Event
 from epic_event.models.contract import Contract
 from epic_event.models.customer import Customer
-from epic_event.serializers import UserDetailSerializer
-from epic_event.serializers import CustomerDetailSerializer
 from epic_event.serializers import EventDetailSerializer
 
-from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView
-from rest_framework import status
 
 User = get_user_model()
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
-from rest_framework.permissions import IsAuthenticated, AllowAny, IsAuthenticatedOrReadOnly
-from epic_event.permissions import IsManagementTeam
+from rest_framework.permissions import IsAuthenticated
 from epic_event.views.general_view import PaginatedViewMixin
+from epic_event.controller.event_controller import create_event, \
+    create_event_permission_redirect, \
+    event_permission_redirect_read_only, \
+    update_event, \
+    delete_event,\
+    create_event_check_contract_already_has_an_event_redirect
 
 
 class EventListView(APIView, PaginatedViewMixin):
@@ -87,24 +85,21 @@ class AttributeEventListView(APIView, PaginatedViewMixin):
 
 @api_view(('GET', 'POST'))
 @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
+@login_required()
 def event_create_view(request, contract_id):
-    if request.user.team == "support":
-        flash = "You don't have permission to access this page"
-        return render(request, 'home.html', context={'flash': flash})
+    create_event_permission_redirect(request)
     contract = get_object_or_404(Contract, id=contract_id)
+    create_event_check_contract_already_has_an_event_redirect(
+        request=request,
+        contract=contract)
     serializer = EventDetailSerializer(data={
         "customer_id": contract.customer_id.id,
         "contract_id": contract.id},
         partial=True)
     serializer.is_valid()
-    if request.method == 'POST':
-        serializer = EventDetailSerializer(data = request.data)
-        if serializer.is_valid():
-            serializer.save()
-            contract.event_associated = "complete"
-            contract.save()
-            flash = "Event " + str(serializer) + " has been successfully created"
-            return render(request, 'home.html', context={'flash': flash})
+    serializer.get_extra_kwargs()
+    if "create_event" in request.POST:
+        return create_event(request=request, contract=contract)
     return render(request, 'event/event_create.html',
                   context={'serializer': serializer, "contract": contract})
 
@@ -113,29 +108,12 @@ def event_create_view(request, contract_id):
 @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
 def event_detail_view(request, event_id):
     event = get_object_or_404(Event, id=event_id)
-    if request.user.team == "support":
-        if request.user != event.support_contact :
-            return (render(request, 'event/event_read_only.html', context={'event': event}))
-    if request.user.team == "sales":
-        if request.user != event.contract_id.sales_contact:
-            return (render(request, 'event/event_read_only.html',
-                           context={'event': event}))
+    event_permission_redirect_read_only(request=request, event=event)
     serializer = EventDetailSerializer(event)
     if "update_event" in request.POST:
-        serializer = EventDetailSerializer(data=request.data, instance=event)
-        if serializer.is_valid():
-            serializer.save()
-            name = str(event)
-            flash = name + " has been successfully updated"
-            return render(request, 'home.html', context={'flash': flash})
+        return update_event(request=request, event=event)
     if "delete_event" in request.POST:
-        if request.user.team != "management":
-            flash = "You don't have permission to access this page"
-            return render(request, 'home.html', context={'flash': flash})
-        name = str(event)
-        event.delete()
-        flash = name + " has been successfully deleted"
-        return render(request, 'home.html', context={'flash': flash})
+        return delete_event(request=request, event=event)
     return render(request, 'event/event_detail.html',
                   context={'serializer': serializer, 'event': event})
 

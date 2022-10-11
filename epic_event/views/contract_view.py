@@ -1,37 +1,31 @@
-from itertools import chain
-
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 
-from epic_event.models.event import Event
-from epic_event.models.contract import Contract
-from epic_event.models.customer import Customer
-from epic_event.serializers import UserDetailSerializer
-from epic_event.serializers import CustomerDetailSerializer
-from epic_event.serializers import ContractDetailSerializer, EventDetailSerializer
+from epic_event.models import Event, Contract, Customer
+from epic_event.serializers import ContractDetailSerializer
+from epic_event.views.general_view import PaginatedViewMixin
+from epic_event.controller.contract_controller import create_contract, \
+    update_contract, \
+    delete_contract, \
+    contract_detail_context_with_event_or_not, \
+    contract_read_only_toggle, \
+    contract_read_only_permission_redirect, \
+    create_contract_prefilled_serializer, \
+    create_contract_permission_redirect
 
-from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import status
 
-User = get_user_model()
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
-from rest_framework.permissions import IsAuthenticated, AllowAny, \
-    IsAuthenticatedOrReadOnly
-from epic_event.permissions import IsManagementTeam
-from epic_event.views.general_view import PaginatedViewMixin
+from rest_framework.permissions import IsAuthenticated
 
+from django.contrib.auth.mixins import LoginRequiredMixin
 
-def get_path(request):
-    path = request.path_info
-    split_path = path.split('/')
-    return split_path
+User = get_user_model()
 
-
-class ContractListView(APIView, PaginatedViewMixin):
+class ContractListView(APIView, PaginatedViewMixin, LoginRequiredMixin):
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'contract/contract_list.html'
     permission_classes = [IsAuthenticated]
@@ -84,70 +78,34 @@ class CustomerContractListView(APIView, PaginatedViewMixin):
 
 @api_view(('GET', 'POST'))
 @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
+@login_required()
 def contract_create_view(request, customer_id):
-    if request.user.team == "support":
-        flash = "You don't have permission to access this page"
-        return render(request, 'home.html', context={'flash': flash})
-    serializer = ContractDetailSerializer()
+    create_contract_permission_redirect(request=request)
     customer = get_object_or_404(Customer, id=customer_id)
-    if request.user.team == "sales":
-        serializer = ContractDetailSerializer(data={
-            "sales_contact": request.user.id,
-            "customer_id": customer_id},
-            partial=True)
-        serializer.is_valid()
-    if request.user.team == "management":
-        serializer = ContractDetailSerializer(data={
-            "sales_contact": customer.sales_contact.id,
-            "customer_id": customer_id},
-            partial=True)
-        serializer.is_valid()
+    serializer = create_contract_prefilled_serializer(request=request,
+                                                      customer=customer)
+    print(serializer.errors)
     if "create" in request.POST:
-        serializer = ContractDetailSerializer(data = request.data)
-        if serializer.is_valid():
-            serializer.save()
-            customer.status = 'ongoing'
-            customer.save()
-            name = serializer.data["name"]
-            flash = "Contract " + name + " with customer " + str(customer) +" has successfully been created"
-            return render(request, 'home.html', context={'flash': flash})
+        return create_contract(request=request, customer=customer)
     return render(request, 'contract/contract_create.html',
-                  context={'serializer': serializer, 'customer':customer})
+                  context={'serializer': serializer, 'customer': customer})
 
 
 @api_view(('GET', 'POST', 'DELETE'))
 @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
+@login_required()
 def contract_detail_view(request, contract_id):
     contract = get_object_or_404(Contract, id=contract_id)
-    if request.user.team == "support":
-        return render(request, 'contract/contract_read_only.html', context={'contract': contract})
+    contract_read_only_permission_redirect(request=request, contract=contract)
     if "read_only" in request.POST:
-        if request.POST['read_only'] == "update_mode_off":
-            return render(request, 'contract/contract_read_only.html',
-                      context={'contract': contract})
-        if request.POST['read_only'] == "update_mode_on":
-            pass
-
+        contract_read_only_toggle(request=request,
+                                  contract=contract)
     serializer = ContractDetailSerializer(contract)
-    if contract.event_associated == "complete":
-        event = get_object_or_404(Event, contract_id=contract)
-        context = {'serializer': serializer, 'contract': contract, 'event':event}
-    else :
-        context = {'serializer': serializer, 'contract': contract}
+    context = contract_detail_context_with_event_or_not(serializer=serializer,
+                                                        contract=contract)
     if "update_contract" in request.POST:
-        serializer = ContractDetailSerializer(data=request.data, instance=contract)
-        if serializer.is_valid():
-            serializer.save()
-            name = str(contract)
-            flash = "Contract " + name + " has been successfully updated"
-            return render(request, 'home.html', context={'flash': flash})
+        return update_contract(request=request, contract=contract)
     if "delete_contract" in request.POST:
-        if request.user.team != "management":
-            flash = "You don't have permission to access this page"
-            return render(request, 'home.html', context={'flash': flash})
-        name = contract
-        contract.delete()
-        flash = "Contract " + str(name) + " has been successfully deleted"
-        return render(request, 'home.html', context={'flash': flash})
+        return delete_contract(request=request, contract=contract)
     return render(request, 'contract/contract_detail.html',
                   context=context)
