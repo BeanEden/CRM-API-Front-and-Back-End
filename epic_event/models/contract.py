@@ -5,7 +5,7 @@ from django.db import models
 from .customer import Customer
 from django.core.validators import validate_slug
 from django.core.validators import RegexValidator
-from .validators import validate_text_max_length, validate_amount
+from .validators import validate_text_max_length, validate_amount, validate_future_date
 
 
 TEXT_REGEX = RegexValidator(regex='[a-zA-Z0-9\s]',
@@ -23,9 +23,9 @@ class Contract(models.Model):
     date_updated = models.DateTimeField(auto_now=True)
     status = models.BooleanField(default=True)
     amount = models.FloatField(default=0, validators=[validate_amount])
-    payment_due = models.DateTimeField(default=datetime.datetime.now())
+    payment_due = models.DateTimeField(default=datetime.datetime.now(), validators=[validate_future_date])
     event_associated = models.CharField(max_length=20, choices=EVENT_STATUS, default="uncomplete")
-    name = models.CharField(max_length=100, validators=[TEXT_REGEX, validate_text_max_length], default="Contract")
+    name = models.CharField(max_length=100, validators=[TEXT_REGEX], default="Contract")
 
     class Meta:
         ordering = ['-date_updated']

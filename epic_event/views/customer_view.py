@@ -17,7 +17,7 @@ from epic_event.controller.customer_controller import \
     update_customer, \
     delete_customer, \
     create_customer, \
-    create_customer_permission_redirect
+    create_customer_permission_redirect, user_customer_queryset, my_customers_queryset
 
 User = get_user_model()
 
@@ -30,6 +30,35 @@ class CustomerListView(LoginRequiredMixin, APIView, PaginatedViewMixin):
 
     def get(self, request):
         queryset = Customer.objects.all()
+        posts_paged = self.paginate_view(
+            request, sorted(queryset,
+                            key=lambda x: x.date_updated, reverse=False))
+        return Response({'customers': posts_paged})
+
+
+class UserCustomerListView(LoginRequiredMixin, APIView, PaginatedViewMixin):
+
+    permission_classes = [IsAuthenticated]
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'customer/customer_list.html'
+
+    def get(self, request, user_id):
+        user = get_object_or_404(User, id=user_id)
+        queryset = user_customer_queryset(user)
+        posts_paged = self.paginate_view(
+            request, sorted(queryset,
+                            key=lambda x: x.date_updated, reverse=False))
+        return Response({'customers': posts_paged})
+
+
+class MyCustomerListView(LoginRequiredMixin, APIView, PaginatedViewMixin):
+
+    permission_classes = [IsAuthenticated]
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'customer/customer_list.html'
+
+    def get(self, request):
+        queryset = my_customers_queryset(request)
         posts_paged = self.paginate_view(
             request, sorted(queryset,
                             key=lambda x: x.date_updated, reverse=False))

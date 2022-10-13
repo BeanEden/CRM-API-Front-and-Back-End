@@ -12,7 +12,9 @@ from epic_event.controller.contract_controller import create_contract, \
     contract_read_only_toggle, \
     contract_read_only_permission_redirect, \
     create_contract_prefilled_serializer, \
-    create_contract_permission_redirect
+    create_contract_permission_redirect, \
+    my_contracts_queryset, \
+    user_contracts_queryset
 
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -24,6 +26,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 User = get_user_model()
+
 
 class ContractListView(APIView, PaginatedViewMixin, LoginRequiredMixin):
     renderer_classes = [TemplateHTMLRenderer]
@@ -43,19 +46,23 @@ class UserContractListView(APIView, PaginatedViewMixin):
     template_name = 'contract/contract_list.html'
     permission_classes = [IsAuthenticated]
 
+    def get(self, request, user_id):
+        user = get_object_or_404(User, id=user_id)
+        queryset = user_contracts_queryset(user)
+        posts_paged = self.paginate_view(
+            request, sorted(queryset,
+                            key=lambda x: x.date_updated, reverse=False))
+        return Response(
+            {'contracts': posts_paged})
+
+
+class MyContractListView(APIView, PaginatedViewMixin):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'contract/contract_list.html'
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
-        if request.user.team == 'management':
-            queryset = Contract.objects.all()
-        elif request.user.team == "sales":
-            queryset = Contract.objects.filter(sales_contact=request.user)
-        elif request.user.team == "support":
-            wanted_items = set()
-            for item in Event.objects.filter(support_contact=request.user):
-                wanted_items.add(item.id)
-            queryset = Contract.objects.filter(pk__in=wanted_items)
-        else:
-            flash = "You don't have permission to access this page"
-            return redirect('home')
+        queryset = my_contracts_queryset(request=request)
         posts_paged = self.paginate_view(
             request, sorted(queryset,
                             key=lambda x: x.date_updated, reverse=False))
@@ -84,7 +91,6 @@ def contract_create_view(request, customer_id):
     customer = get_object_or_404(Customer, id=customer_id)
     serializer = create_contract_prefilled_serializer(request=request,
                                                       customer=customer)
-    print(serializer.errors)
     if "create" in request.POST:
         return create_contract(request=request, customer=customer)
     return render(request, 'contract/contract_create.html',
@@ -97,12 +103,12 @@ def contract_create_view(request, customer_id):
 def contract_detail_view(request, contract_id):
     contract = get_object_or_404(Contract, id=contract_id)
     contract_read_only_permission_redirect(request=request, contract=contract)
-    if "read_only" in request.POST:
-        contract_read_only_toggle(request=request,
-                                  contract=contract)
     serializer = ContractDetailSerializer(contract)
     context = contract_detail_context_with_event_or_not(serializer=serializer,
                                                         contract=contract)
+    if "read_only" in request.POST:
+        return contract_read_only_toggle(request=request,
+                                  context=context)
     if "update_contract" in request.POST:
         return update_contract(request=request, contract=contract)
     if "delete_contract" in request.POST:

@@ -28,7 +28,7 @@
         </thead>
             <tr>
                 <td class="td-infos">customer : </td>
-                <td>{{ contract.customer }}</td>
+                <td>{{ contract.customer_id }}</td>
             </tr>
     {% else %}
         <thead>
@@ -65,5 +65,11 @@
     <a href="{% url 'event_detail' contract.id %}"><button>See the event</button></a>
     </div>
 </div>
+    {% if contract.event_associated == "uncomplete" %}
+        <a href="{% url 'event_create' contract.id %}"><button>Add an event</button></a>
+        {% else %}
+        <p> a {{contract.event_associated}} contract.id</p>
+        {% include 'event/event_snippet.html' with contract=contract %}
+    {% endif %}
 
 {% endblock content %}

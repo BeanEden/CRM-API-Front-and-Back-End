@@ -83,8 +83,6 @@ class CustomerContractListView(APIView, PaginatedViewMixin):
 
 
 
-
-
 def create_contract_permission_redirect(request):
     if request.user.team == "support":
         flash = "You don't have permission to access this page"
@@ -107,8 +105,6 @@ def create_contract_prefilled_serializer(request, customer):
             "customer_id": customer.id},
             partial=True)
         serializer.is_valid()
-    else:
-        pass
     return serializer
 
 
@@ -134,12 +130,13 @@ def contract_read_only_permission_redirect(request, contract):
         pass
 
 
-def contract_read_only_toggle(request, contract):
+def contract_read_only_toggle(request, context):
     if request.POST['read_only'] == "update_mode_off":
         return render(request, 'contract/contract_read_only.html',
-                      context={'contract': contract})
+                      context=context)
     if request.POST['read_only'] == "update_mode_on":
-        pass
+        return render(request, 'contract/contract_detail.html',
+                      context=context)
 
 
 def create_contract(request, customer):
@@ -154,23 +151,24 @@ def create_contract(request, customer):
             customer) + " has successfully been created"
         return render(request, 'home.html', context={'flash': flash})
     else:
-        print(serializer.errors)
-        pass
+        return render(request, 'contract/contract_create.html',
+                      context={'serializer': serializer, 'customer': customer})
 
 
 def update_contract(request, contract):
     serializer = ContractDetailSerializer(data=request.data, instance=contract)
     if serializer.is_valid():
         serializer.save()
-        print(serializer)
         contract_list = Contract.objects.filter(customer_id = contract.customer_id)
         contract.customer_id.checking_status(contract_list)
         name = str(contract)
         flash = "Contract " + name + " has been successfully updated"
         return render(request, 'home.html', context={'flash': flash})
     else:
-        print(serializer.errors)
-        pass
+        context = contract_detail_context_with_event_or_not(serializer=serializer,
+                                                  contract=contract)
+        return render(request, 'contract/contract_detail.html',
+                      context=context)
 
 
 def delete_contract(request, contract):
@@ -181,3 +179,34 @@ def delete_contract(request, contract):
     contract.delete()
     flash = "Contract " + str(name) + " has been successfully deleted"
     return render(request, 'home.html', context={'flash': flash})
+
+
+
+def user_contracts_queryset(user):
+    """Docstring"""
+    if user.team == 'management':
+        queryset = Contract.objects.all()
+    elif user.team == 'sales':
+        queryset = Contract.objects.filter(sales_contact=user)
+    else:
+        wanted_items = set()
+        for item in Event.objects.filter(support_contact=user):
+            wanted_items.add(item.id)
+        queryset = Contract.objects.filter(pk__in=wanted_items)
+    return queryset
+
+
+def my_contracts_queryset(request):
+    """Docstring"""
+    if request.user.team == 'management':
+        queryset = Contract.objects.all()
+    elif request.user.team == 'sales':
+        queryset = Contract.objects.filter(sales_contact=request.user)
+    else:
+        wanted_items = set()
+        for item in Event.objects.filter(support_contact=request.user):
+            wanted_items.add(item.id)
+        queryset = Contract.objects.filter(pk__in=wanted_items)
+    return queryset
+
+

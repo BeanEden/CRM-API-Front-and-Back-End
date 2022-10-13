@@ -43,11 +43,11 @@
         </tbody>
 </table>
     <div class=customer-buttons>
-    <a href="{% url 'contract_detail' contract.id %}"><button>See the contract</button></a>
-    {% if contract.event != 'complete' %}
-    <a href="{% url 'event_create' contract.id %}"><button>Add an event</button></a>
+        <a href="{% url 'contract_detail' contract.id %}"><button>See the contract</button></a>
+        {% if contract.event_associated == 'uncomplete' %}
+        <a href="{% url 'event_create' contract.id %}"><button>Add an event</button></a>
         {% else %}
-       <a href="{% url 'event_detail' contract.id %}"><button>Event associated</button></a>
-    {% endif %}
+        <a href="{% url 'contract_event_detail' contract.id %}"><button>Event associated</button></a>
+        {% endif %}
     </div>
 </div>

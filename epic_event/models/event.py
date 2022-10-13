@@ -4,7 +4,7 @@ from .customer import Customer
 from .contract import Contract
 from django.core.validators import RegexValidator
 from django.contrib.auth import get_user_model
-from .validators import validate_attendees, validate_event_date
+from .validators import validate_attendees, validate_future_date
 from django.core.validators import MinValueValidator
 User = get_user_model()
 
@@ -24,7 +24,7 @@ class Event(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
     attendees = models.IntegerField(default=0, validators=[MinValueValidator(0)])
-    event_date = models.DateTimeField(null=True, validators=[validate_event_date])
+    event_date = models.DateTimeField(null=True, validators=[validate_future_date])
     notes = models.TextField(blank=True, validators=[TEXT_REGEX])
 
     class Meta:

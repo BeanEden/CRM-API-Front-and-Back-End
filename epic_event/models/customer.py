@@ -1,13 +1,13 @@
 from django.conf import settings
 from django.db import models
 from django.core.validators import validate_slug
-from django.core.validators import RegexValidator
+from django.core.validators import RegexValidator, MaxLengthValidator
 
 TEXT_REGEX = RegexValidator(regex='[a-zA-Z0-9\s]',
-                            message='characters must be Alphanumeric')
+                            message='Characters must be Alphanumeric')
 
 PHONE_REGEX = RegexValidator(regex='[+0-9]',
-                             message='phone number must contain digits')
+                             message='Phone number must contain digits')
 
 CUSTOMER_STATUS = [('prospect', 'PROSPECT'),
              ('ongoing', 'EN COURS'),
@@ -23,12 +23,12 @@ class Customer(models.Model):
     sales_contact = models.ForeignKey(
         to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
         related_name='sales_user_assigned')
-    first_name = models.CharField(max_length=25, validators=[TEXT_REGEX], blank=True)
-    last_name = models.CharField(max_length=25, validators=[TEXT_REGEX], blank=True)
+    first_name = models.CharField(max_length=50, validators=[TEXT_REGEX, MaxLengthValidator(50)], blank=True)
+    last_name = models.CharField(max_length=50, validators=[TEXT_REGEX], blank=True)
     email = models.EmailField(max_length=100, blank=True)
-    phone = models.CharField(max_length=25, validators=[PHONE_REGEX], blank=True)
-    mobile = models.CharField(max_length=25, validators=[PHONE_REGEX], blank=True)
-    company_name = models.CharField(max_length=25, validators=[TEXT_REGEX], blank=True)
+    phone = models.CharField(max_length=20, validators=[PHONE_REGEX], blank=True)
+    mobile = models.CharField(max_length=20, validators=[PHONE_REGEX], blank=True)
+    company_name = models.CharField(max_length=200, validators=[TEXT_REGEX], blank=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=20, choices=CUSTOMER_STATUS, default=CUSTOMER_STATUS[0][0])
@@ -59,4 +59,16 @@ class Customer(models.Model):
                     ongoing_contracts += 1
             if ongoing_contracts == 0:
                 self.status = CUSTOMER_STATUS[2][0]
+        self.save()
+
+    def checking_profile_complete(self):
+        error_message = []
+        if not self.email:
+            self.profile = CUSTOMER_PROFILE[0][0]
+        elif not self.first_name or not self.company_name:
+            self.profile = CUSTOMER_PROFILE[0][0]
+        elif self.phone + self.mobile == 0:
+            self.profile = CUSTOMER_PROFILE[0][0]
+        else:
+            self.profile = "complete"
         self.save()

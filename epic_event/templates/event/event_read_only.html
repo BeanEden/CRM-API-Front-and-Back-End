@@ -1,7 +1,16 @@
 {% extends 'base.html' %}
 {% load rest_framework %}
+{% load static %}
 
 {% block content %}
+        {%  if request.user.team != "support" %}
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" name="read_only" value = "update_mode_on"><img src="{% static 'images/update_pen.png'%}"></button>
+    </form>
+</button>
+    {% endif %}
+
         <div class="snippet">
         <p class = "date">{{ event.date_updated }}</p>
         <p>customer : {{ event.customer_id }}</p>
@@ -14,3 +23,4 @@
         {% endif %}
     </div>
 {% endblock %}
+

@@ -1,9 +1,16 @@
 {% extends 'base.html' %}
 {% load rest_framework %}
-
+{% load static %}
 {% block content %}
 
 <h1>Event - {{ contract_id }}</h1>
+
+{% if request.user.team != "support" %}
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" name="read_only" value = "update_mode_off"><img src="{% static 'images/update_keylock.png'%}"></button>
+    </form>
+    {% endif %}
 
 <form method="POST">
     {% csrf_token %}

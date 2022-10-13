@@ -10,7 +10,7 @@ def get_sales_contact():
 
 class CustomerDetailSerializer(ModelSerializer):
 
-    sales_contact = ChoiceField(choices=get_sales_contact(),allow_null=True)
+    sales_contact = ChoiceField(choices=get_sales_contact(), allow_null=True)
 
     class Meta:
         model = Customer
@@ -27,7 +27,6 @@ class CustomerDetailSerializer(ModelSerializer):
 
         extra_kwargs = {
             'status': {'read_only': True},
-            'amount': {'error_messages': {"min"}}
         }
 
 

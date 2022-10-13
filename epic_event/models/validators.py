@@ -16,15 +16,16 @@ def validate_amount(value):
             params={'value': value},
         )
 
-def validate_event_date(value):
+def validate_future_date(value):
     value = date_str_split(str(value))
     now = datetime.datetime.now()
     now = date_str_split(now)
     if value <= now:
         raise ValidationError(
-            _('The event must be held in the future'),
+            _('This date must be set in the future'),
             params={'value': value},
         )
+
 
 def date_str_split(date):
     date = str(date)

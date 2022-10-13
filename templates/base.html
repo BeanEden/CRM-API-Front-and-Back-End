@@ -39,6 +39,7 @@
                     <button class="dropbtn">Contracts<i class="fa fa-caret-down"></i></button>
                         <div class="dropdown-content">
                           <a href="{% url 'contract_list' %}">Browse</a>
+                          <a href="{% url 'my_contract_list' %}">My contracts</a>
                         </div>
                 </div>
                 <div class="dropdown">
@@ -52,12 +53,13 @@
                     <button class="dropbtn">Events<i class="fa fa-caret-down"></i></button>
                         <div class="dropdown-content">
                           <a href="{% url 'event_list' %}">Browse</a>
-{#                            <a href="{% url 'event_create_untied' %}">New</a>#}
+                            <a href="{% url 'user_event_list' request.user.id %}">My events</a>
+                            {% if request.user.team == 'management'%}
+                            <a href="{% url 'unassigned_event_list'%}">Unassigned events</a>
+                            {% endif %}
                         </div>
                 </div>
                 <a href="{% url 'home' %}">Accueil</a>
-
-
                 <div class="submit-form">
                 <form method="POST" enctype="multipart/form-data">
                     <input type="text" name="searchbar" placeholder="Search..">
