@@ -22,7 +22,7 @@ CUSTOMER_PROFILE = [('uncomplete', 'UNCOMPLETE'),
 class Customer(models.Model):
     sales_contact = models.ForeignKey(
         to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
-        related_name='sales_user_assigned')
+        related_name='sales_user_assigned', null=True)
     first_name = models.CharField(max_length=50, validators=[TEXT_REGEX, MaxLengthValidator(50)], blank=True)
     last_name = models.CharField(max_length=50, validators=[TEXT_REGEX], blank=True)
     email = models.EmailField(max_length=100, blank=True)

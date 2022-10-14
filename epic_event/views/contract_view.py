@@ -83,6 +83,20 @@ class CustomerContractListView(APIView, PaginatedViewMixin):
         return Response({'contracts': posts_paged})
 
 
+class NoEventContractListView(APIView, PaginatedViewMixin):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'contract/contract_list.html'
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        queryset = Contract.objects.filter(event_associated="uncomplete")
+        posts_paged = self.paginate_view(
+            request, sorted(queryset,
+                            key=lambda x: x.date_updated, reverse=False))
+        return Response({'contracts': posts_paged})
+
+
+
 @api_view(('GET', 'POST'))
 @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
 @login_required()

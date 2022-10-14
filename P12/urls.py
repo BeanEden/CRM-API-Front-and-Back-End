@@ -5,13 +5,13 @@ from django.contrib.auth.views import (
     LoginView, LogoutView, PasswordChangeView, PasswordChangeDoneView)
 from django.urls import path
 
-# from epic_event.views import SignUpView
-from epic_event.views.user_view import UserListView, UserCreateDetailView, UserDetailView
-from epic_event.views.customer_view import CustomerListView, MyCustomerList, UserCustomerList, customer_detail_view, customer_create_view
-from epic_event.views.contract_view import ContractListView, CustomerContractListView, MyContractListView, UserContractListView, contract_create_view,contract_detail_view
+
+from epic_event.views.user_view import UserListView, user_detail_view
+from epic_event.views.customer_view import CustomerListView, MyCustomerListView, UserCustomerListView, customer_detail_view, customer_create_view
+from epic_event.views.contract_view import ContractListView, NoEventContractListView, CustomerContractListView, MyContractListView, UserContractListView, contract_create_view,contract_detail_view
 from epic_event.views.event_view import EventListView, CustomerEventListView, MyEventListView,UserEventListView, UnassignedEventListView, event_create_view, event_detail_view, contract_event_detail_view
 import epic_event.views
-from epic_event.views.general_view import GlobalFeed
+from epic_event.views.general_view import GlobalFeed, GlobalSearchFeed, search
 from authentication.views import SignUpView
 
 urlpatterns = [
@@ -35,25 +35,25 @@ urlpatterns = [
         template_name='authentication/password_change_done.html'),
         name='password_change_done'),
     # --------------------------HOME AND USER PAGES--------------------------#
-
+    #
     path('home/', GlobalFeed.as_view(), name='home'),
-    # path('event_list/', epic_event.views.EventListView.as_view(), name='event_list'),
+    path('search/', search, name='search'),
     path('user_list/', UserListView.as_view(), name='user_list'),
     path('user_create/', SignUpView.as_view(), name='user_create'),
-    path('user_detail/<int:pk>/', UserDetailView.as_view(), name='user_detail'),
+    path('<int:user_id>/user_detail/', user_detail_view, name='user_detail'),
 
     path('customer_list/', CustomerListView.as_view(), name='customer_list'),
     path('customer_create/', customer_create_view, name="customer_create"),
     path('<int:customer_id>/customer_detail/', customer_detail_view,
          name="customer_detail"),
-    path('<int:user_id>/customer_list/', UserCustomerList.as_view(), name='user_customer_list'),
-    path('my_customer_list/', MyCustomerList.as_view(), name='my_customer_list'),
+    path('<int:user_id>/customer_list/', UserCustomerListView.as_view(), name='user_customer_list'),
+    path('my_customer_list/', MyCustomerListView.as_view(), name='my_customer_list'),
 
     path('contract_list/', ContractListView.as_view(), name='contract_list'),
     path('<int:user_id>/user_contract_list/', UserContractListView.as_view(), name='user_contract_list'),
     path('my_contract_list/', MyContractListView.as_view(),  name='my_contract_list'),
     path('<int:customer_id>/customer_contract_list/', CustomerContractListView.as_view(), name='customer_contract_list'),
-
+    path('no_event_contract_list/', NoEventContractListView.as_view(), name='no_event_contract_list'),
 
     path('<int:customer_id>/contract_create/', contract_create_view,
              name='contract_create'),

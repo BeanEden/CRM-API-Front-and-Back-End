@@ -23,7 +23,7 @@
                 <div class="dropdown">
                     <button class="dropbtn">Mon compte  <i class="fa fa-caret-down"></i></button>
                     <div class="dropdown-content">
-                      <a href="#">Informations</a>
+                      <a href="{% url 'user_detail' request.user.id%}">Mes informations</a>
                       <a href="{% url 'home' %}">Nouvelle photo</a>
                       <a href="{% url 'logout' %}">Se déconnecter</a>
                     </div>
@@ -39,7 +39,10 @@
                     <button class="dropbtn">Contracts<i class="fa fa-caret-down"></i></button>
                         <div class="dropdown-content">
                           <a href="{% url 'contract_list' %}">Browse</a>
+                {% if request.user.team != "management" %}
                           <a href="{% url 'my_contract_list' %}">My contracts</a>
+                              {%  endif %}
+                            <a href="{% url 'no_event_contract_list' %}">Contracts without event</a>
                         </div>
                 </div>
                 <div class="dropdown">
@@ -47,13 +50,18 @@
                         <div class="dropdown-content">
                           <a href="{% url 'customer_list' %}">Browse</a>
                             <a href="{% url 'customer_create' %}">New</a>
+                            {% if request.user.team != "management" %}
+                            <a href="{% url 'my_customer_list' %}">My customers</a>
+                            {%  endif %}
                         </div>
                 </div>
                 <div class="dropdown">
                     <button class="dropbtn">Events<i class="fa fa-caret-down"></i></button>
                         <div class="dropdown-content">
                           <a href="{% url 'event_list' %}">Browse</a>
+                                   {% if request.user.team != "management" %}
                             <a href="{% url 'user_event_list' request.user.id %}">My events</a>
+                                         {%  endif %}
                             {% if request.user.team == 'management'%}
                             <a href="{% url 'unassigned_event_list'%}">Unassigned events</a>
                             {% endif %}
@@ -61,13 +69,18 @@
                 </div>
                 <a href="{% url 'home' %}">Accueil</a>
                 <div class="submit-form">
-                <form method="POST" enctype="multipart/form-data">
-                    <input type="text" name="searchbar" placeholder="Search..">
-                    <button type="submit"><i class="fa fa-search"></i></button>
-                    {% csrf_token %}
-                </form>
-                </div>
 
+    <form action="{% url 'search' %}" class="form-inline" method="get">
+
+       <div class="form-group mx-sm-3 mb-2">
+        <label for="" class="sr-only">search</label>
+        <input name="search" type="" class="form-control" id="" placeholder="Keyword">
+        </div>
+
+        <button type="submit" class="btn btn-success btn-lg mb-2">Search</button>
+
+   </form>
+                </div>
             {% endif %}
         </div>
         <div class="main">

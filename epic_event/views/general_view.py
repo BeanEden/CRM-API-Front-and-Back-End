@@ -2,10 +2,14 @@ from itertools import chain
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.db.models import Q
 from django.shortcuts import render
 from epic_event.models.event import Event
 from epic_event.models.contract import Contract
 from epic_event.models.customer import Customer
+from epic_event.controller.general_controller import search_event, \
+    search_contract, \
+    search_customer, search_user
 
 from rest_framework.views import APIView
 
@@ -57,3 +61,43 @@ class GlobalFeed(LoginRequiredMixin, APIView, PaginatedViewMixin):
                             key=lambda x: x.date_updated, reverse=True))
         return render(request, self.template_name,
                       context={'page_obj': posts_paged})
+
+
+class GlobalSearchFeed(LoginRequiredMixin, APIView, PaginatedViewMixin):
+    """Class view used to generate a paginated list of all tickets and reviews
+    ordered chronologically (soonest first)
+    """
+    template_name = 'home.html'
+
+    def get(self, request, **kwargs):
+        """
+        argument: GET request
+        return: url + page_object (= paginated posts)
+        """
+        print(kwargs)
+        customers = search_customer(kwargs['search'])
+        contracts = search_contract(kwargs['search'])
+        events = search_event(kwargs['search'])
+        users = search_user(kwargs['search'])
+        posts_paged = self.paginate_view(
+            request, sorted(chain(customers, contracts, events, users),
+                            key=lambda x: x.date_updated, reverse=True))
+        return render(request, self.template_name,
+                      context={'page_obj': posts_paged})
+
+def search(request):
+    results = []
+    query=""
+    if request.method == "GET":
+        query = request.GET.get('search')
+        if query == '':
+            query = 'None'
+        customers = search_customer(query)
+        contracts = search_contract(query)
+        events = search_event(query)
+        users = search_user(query)
+        posts_paged = sorted(chain(customers, contracts, events, users),
+                            key=lambda x: x.date_updated, reverse=True)
+    return render(request, 'home.html', {'query':query, 'page_obj': posts_paged})
+
+# def se

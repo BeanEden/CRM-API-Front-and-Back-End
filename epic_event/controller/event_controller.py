@@ -1,4 +1,4 @@
-"""Docstring"""
+"""Event controller"""
 from django.contrib.auth import get_user_model
 from django.shortcuts import render, get_object_or_404
 from epic_event.models.event import Event
@@ -27,7 +27,7 @@ def create_event(request, contract):
 
 
 def create_event_permission_redirect(request):
-    """Docstring"""
+    """Redirect unauthorized user"""
     if request.user.team == "support":
         flash = "You don't have permission to access this page"
         return render(request, 'home.html', context={'flash': flash})
@@ -36,7 +36,7 @@ def create_event_permission_redirect(request):
 
 def create_event_check_contract_already_has_an_event_redirect(request,
                                                               contract):
-    """Docstring"""
+    """Redirect if contract already have an event"""
     if contract.event_associated == "complete":
         flash = "This contract already has an event"
         return render(request, 'home.html', context={'flash': flash})
@@ -44,7 +44,7 @@ def create_event_check_contract_already_has_an_event_redirect(request,
 
 
 def event_permission_redirect_read_only(request, event):
-    """Docstring"""
+    """Redirect permission if user isn't authorized to update/delete events"""
     if request.user.team == "support" and \
             request.user != event.support_contact:
         return render(request, 'event/event_read_only.html',

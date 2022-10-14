@@ -1,3 +1,4 @@
+"""Customer controller"""
 from django.contrib.auth import get_user_model
 from django.shortcuts import render, redirect, get_object_or_404
 from epic_event.serializers import CustomerDetailSerializer
@@ -8,6 +9,7 @@ User = get_user_model()
 
 
 def create_customer_permission_redirect(request):
+    """Redirect unauthorized user"""
     if request.user.team == "support":
         flash = "You don't have permission to access this page"
         return render(request, 'home.html', context={'flash': flash})
@@ -16,18 +18,18 @@ def create_customer_permission_redirect(request):
         if serializer.is_valid():
             return render(request, 'customer/customer_create.html',
                           context={'serializer': serializer})
-    else:
-        pass
+    return "authorized to create a customer"
 
 
 def customer_permission_redirect_read_only(request, customer):
+    """Redirect unauthorized user to read only"""
     if request.user.team == "support":
         return render(request, 'customer/customer_read_only.html', context={'customer': customer})
-    else:
-        pass
+    return "authorized to update a customer"
 
 
 def create_customer(request):
+    """Create a customer controller"""
     serializer = CustomerDetailSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
@@ -37,12 +39,12 @@ def create_customer(request):
         name = serializer.data["first_name"] + ' ' + serializer.data["last_name"]
         flash = "Customer " + name + " has been successfully created"
         return render(request, 'home.html', context={'flash': flash})
-    else:
-        return render(request, 'customer/customer_create.html',
-                      context={'serializer': serializer})
+    return render(request, 'customer/customer_create.html',
+                  context={'serializer': serializer})
 
 
 def update_customer(request, customer):
+    """Update customer controller"""
     serializer = CustomerDetailSerializer(data=request.data, instance=customer)
     if serializer.is_valid():
         serializer.save()
@@ -52,12 +54,12 @@ def update_customer(request, customer):
         flash = "Customer " + name + " has been successfully updated"
         redirect('home', )
         return render(request, 'home.html', context={'flash': flash})
-    else:
-        return render(request, 'customer/customer_detail.html',
-                      context={'serializer': serializer, 'customer': customer})
+    return render(request, 'customer/customer_detail.html',
+                  context={'serializer': serializer, 'customer': customer})
 
 
 def delete_customer(request, customer):
+    """Delete customer"""
     if request.user.team != "management":
         flash = "You don't have permission to access this page"
         return render(request, 'home.html', context={'flash': flash})
@@ -68,7 +70,7 @@ def delete_customer(request, customer):
 
 
 def user_customer_queryset(user):
-    """Docstring"""
+    """Customer queryset of a specific user"""
     if user.team == 'management':
         queryset = Customer.objects.all()
     elif user.team == 'sales':
@@ -83,7 +85,7 @@ def user_customer_queryset(user):
 
 
 def my_customers_queryset(request):
-    """Docstring"""
+    """Customer queryset of the request.user"""
     if request.user.team == 'management':
         queryset = Customer.objects.all()
     elif request.user.team == 'sales':
@@ -95,9 +97,3 @@ def my_customers_queryset(request):
             wanted_items.add(item.id)
         queryset = Customer.objects.filter(pk__in=wanted_items)
     return queryset
-
-
-
-
-
-
