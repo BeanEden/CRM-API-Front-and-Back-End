@@ -1,5 +1,8 @@
 {% load static %}
+
 <div class="snippet">
+
+    <img class="snippet_img_bg" src="{% static 'images/customers/customer_round_light.png'%}">
         {% if  customer.status == 'prospect' %}
             <img class="customer-banner" src="{% static 'images/customers/banner_down_prospect_small.png'%}">
         {% elif  customer.status == 'ongoing'%}

@@ -188,6 +188,13 @@ h2 {
     margin: 0px;
 }
 
+.snippet .snippet_img_bg {
+    position: absolute;
+    height:10em;
+    top: 50%; left: 50%; /* à 50%/50% du parent référent */
+    transform: translate(-50%, -50%);
+}
+
 .snippet .customer-banner {
     position: absolute;
     top : 0;

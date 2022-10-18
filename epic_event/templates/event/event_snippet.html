@@ -1,10 +1,12 @@
-    <div class="snippet">
+{% load static %}
+<div class="snippet">
+    <img class="snippet_img_bg" src="{% static 'images/event/event_bg_light.png'%}">
         <p class = "date">{{ event.date_updated }}</p>
         <p>customer : {{ event.customer_id }}</p>
         <p>contract :  {{ event.contract_id }}</p>
         <p>attendees : {{ event.attendees }}</p>
         <p>notes : {{ event.notes }}</p>
-      <div class = "customer-button">
+      <div class = "customer-buttons">
         <a href="{% url 'event_detail' event.id %}"><button>See the event</button></a>
         {% if user.team != 'sales' %}
                 <a href="{% url 'event_detail' event.id %}"><button>Modifier</button></a>

@@ -1,35 +1,32 @@
-from itertools import chain
-from copy import deepcopy
-from django.contrib.auth import get_user_model, forms
+"""User views (except signup)"""
+from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404, render
 
-from django.shortcuts import get_object_or_404, redirect, render
-from epic_event.serializers import UserDetailSerializer
-from epic_event.controller.user_controller import delete_user, update_user, user_permission_redirect_read_only, user_read_only_toggle
-from epic_event.views.general_view import PaginatedViewMixin
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import status
+
+from epic_event.permissions import IsManagementTeam
+from epic_event.serializers import UserDetailSerializer
+from epic_event.controller.user_controller import delete_user, update_user, \
+    user_permission_redirect_read_only, user_read_only_toggle
+from epic_event.views.general_view import PaginatedViewMixin
+
 
 User = get_user_model()
 
-from rest_framework.permissions import IsAuthenticated, AllowAny, \
-    IsAuthenticatedOrReadOnly
-from epic_event.permissions import IsManagementTeam
-
-
 
 class UserListView(APIView, PaginatedViewMixin):
-
+    """All user list"""
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'user/user_list.html'
     permission_classes = [IsAuthenticated, IsManagementTeam]
 
 
     def get(self, request):
+        """Get method"""
         queryset = User.objects.all()
         serializer = UserDetailSerializer()
         posts_paged = self.paginate_view(
@@ -38,11 +35,10 @@ class UserListView(APIView, PaginatedViewMixin):
         return Response({'users': posts_paged, 'serializer': serializer})
 
 
-
 @api_view(('GET', 'POST', 'DELETE'))
 @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
 def user_detail_view(request, user_id):
-    """Docstring"""
+    """User detail view"""
     user = get_object_or_404(User, id=user_id)
     serializer = UserDetailSerializer(user)
     context = {'user': user, 'serializer': serializer}

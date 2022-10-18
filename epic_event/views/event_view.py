@@ -1,4 +1,4 @@
-"""Module docstring"""
+"""Event view"""
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.decorators import login_required
@@ -10,8 +10,8 @@ from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.permissions import IsAuthenticated
 
-from epic_event.models import Event, Contract, Customer
-from epic_event.serializers import EventDetailSerializer
+from epic_event.models import Event, Contract
+from epic_event.serializers import EventSerializer
 from epic_event.views.general_view import PaginatedViewMixin
 from epic_event.controller.event_controller import create_event, \
     create_event_permission_redirect, \
@@ -30,7 +30,7 @@ User = get_user_model()
 
 
 class EventListView(APIView, PaginatedViewMixin):
-    """Docstring"""
+    """All events list"""
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'event/event_list.html'
     permission_classes = [IsAuthenticated]
@@ -47,7 +47,7 @@ class EventListView(APIView, PaginatedViewMixin):
 
 
 class UserEventListView(APIView, PaginatedViewMixin):
-    """Docstring"""
+    """All events related to a user"""
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'event/event_list.html'
     permission_classes = [IsAuthenticated]
@@ -64,7 +64,7 @@ class UserEventListView(APIView, PaginatedViewMixin):
 
 
 class MyEventListView(APIView, PaginatedViewMixin):
-    """Docstring"""
+    """All events related to the logged user"""
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'event/event_list.html'
     permission_classes = [IsAuthenticated]
@@ -80,7 +80,7 @@ class MyEventListView(APIView, PaginatedViewMixin):
 
 
 class CustomerEventListView(APIView, PaginatedViewMixin):
-    """Docstring"""
+    """All events related to the customer"""
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'event/event_list.html'
     permission_classes = [IsAuthenticated]
@@ -95,7 +95,7 @@ class CustomerEventListView(APIView, PaginatedViewMixin):
 
 
 class UnassignedEventListView(APIView, PaginatedViewMixin):
-    """Docstring"""
+    """All unassigned events list"""
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'event/event_list.html'
     permission_classes = [IsAuthenticated]
@@ -129,10 +129,10 @@ def event_create_view(request, contract_id):
 @api_view(('GET', 'POST', 'DELETE'))
 @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
 def event_detail_view(request, event_id):
-    """Docstring"""
+    """Event detail view (get, update, delete"""
     event = get_object_or_404(Event, id=event_id)
     event_permission_redirect_read_only(request=request, event=event)
-    serializer = EventDetailSerializer(event)
+    serializer = EventSerializer(event)
     context = {'serializer': serializer, 'event': event}
     if "read_only" in request.POST:
         return event_read_only_toggle(request=request, context=context)
@@ -147,10 +147,10 @@ def event_detail_view(request, event_id):
 @api_view(('GET', 'POST', 'DELETE'))
 @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
 def contract_event_detail_view(request, contract_id):
-    """Docstring"""
+    """Event detail linked to a contract"""
     event = get_object_or_404(Event, id=contract_id)
     event_permission_redirect_read_only(request=request, event=event)
-    serializer = EventDetailSerializer(event)
+    serializer = EventSerializer(event)
     context = {'serializer': serializer, 'event': event}
     if "read_only" in request.POST:
         return event_read_only_toggle(request=request, context=context)

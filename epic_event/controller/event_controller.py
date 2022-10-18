@@ -3,14 +3,14 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import render, get_object_or_404
 from epic_event.models.event import Event
 from epic_event.models.customer import Customer
-from epic_event.serializers import EventDetailSerializer
+from epic_event.serializers import EventSerializer
 
 User = get_user_model()
 
 
 def create_event(request, contract):
     """Docstring"""
-    serializer = EventDetailSerializer(data=request.data)
+    serializer = EventSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
         contract.event_associated = "complete"
@@ -69,7 +69,7 @@ def event_read_only_toggle(request, context):
 
 def update_event(request, event):
     """Docstring"""
-    serializer = EventDetailSerializer(data=request.data, instance=event)
+    serializer = EventSerializer(data=request.data, instance=event)
     if serializer.is_valid():
         serializer.save()
         name = str(event)
@@ -94,7 +94,7 @@ def delete_event(request, event):
 
 def create_event_serializer_filling(contract):
     """Docstring"""
-    serializer = EventDetailSerializer(data={
+    serializer = EventSerializer(data={
         "customer_id": contract.customer_id.id,
         "contract_id": contract.id},
         partial=True)

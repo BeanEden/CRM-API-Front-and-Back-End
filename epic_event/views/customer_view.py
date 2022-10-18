@@ -1,3 +1,4 @@
+"""Customer view module"""
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -10,25 +11,29 @@ from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.permissions import IsAuthenticated
 
 from epic_event.models.customer import Customer
-from epic_event.serializers import CustomerDetailSerializer
+from epic_event.serializers import CustomerSerializer
 from epic_event.views.general_view import PaginatedViewMixin
 from epic_event.controller.customer_controller import \
     customer_permission_redirect_read_only, \
     update_customer, \
     delete_customer, \
     create_customer, \
-    create_customer_permission_redirect, user_customer_queryset, my_customers_queryset
+    create_customer_permission_redirect, \
+    user_customer_queryset, \
+    my_customers_queryset
+
 
 User = get_user_model()
 
 
 class CustomerListView(LoginRequiredMixin, APIView, PaginatedViewMixin):
-
+    """All customer view"""
     permission_classes = [IsAuthenticated]
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'customer/customer_list.html'
 
     def get(self, request):
+        """get method"""
         queryset = Customer.objects.all()
         posts_paged = self.paginate_view(
             request, sorted(queryset,
@@ -37,12 +42,13 @@ class CustomerListView(LoginRequiredMixin, APIView, PaginatedViewMixin):
 
 
 class UserCustomerListView(LoginRequiredMixin, APIView, PaginatedViewMixin):
-
+    """Customers linked to a user"""
     permission_classes = [IsAuthenticated]
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'customer/customer_list.html'
 
     def get(self, request, user_id):
+        """get method"""
         user = get_object_or_404(User, id=user_id)
         queryset = user_customer_queryset(user)
         posts_paged = self.paginate_view(
@@ -52,12 +58,13 @@ class UserCustomerListView(LoginRequiredMixin, APIView, PaginatedViewMixin):
 
 
 class MyCustomerListView(LoginRequiredMixin, APIView, PaginatedViewMixin):
-
+    """All customer linked to the logged user"""
     permission_classes = [IsAuthenticated]
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'customer/customer_list.html'
 
     def get(self, request):
+        """get method"""
         queryset = my_customers_queryset(request)
         posts_paged = self.paginate_view(
             request, sorted(queryset,
@@ -69,8 +76,9 @@ class MyCustomerListView(LoginRequiredMixin, APIView, PaginatedViewMixin):
 @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
 @login_required()
 def customer_create_view(request):
+    """Customer creation view"""
     create_customer_permission_redirect(request=request)
-    serializer = CustomerDetailSerializer()
+    serializer = CustomerSerializer()
     if "create_customer" in request.POST:
         print("post")
         return create_customer(request=request)
@@ -82,9 +90,10 @@ def customer_create_view(request):
 @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
 @login_required()
 def customer_detail_view(request, customer_id):
+    """Customer detailed view"""
     customer = get_object_or_404(Customer, id=customer_id)
     customer_permission_redirect_read_only(request=request, customer=customer)
-    serializer = CustomerDetailSerializer(customer)
+    serializer = CustomerSerializer(customer)
     if "update_customer" in request.POST:
         return update_customer(request=request, customer=customer)
     if "delete_customer" in request.POST:

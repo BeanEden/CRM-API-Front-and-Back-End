@@ -1,3 +1,4 @@
+"""Sign up and login form"""
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
@@ -17,18 +18,19 @@ USER_TEAM = [('management', 'GESTION'),
 
 
 class SignupForm(UserCreationForm):
-
+    """Sign up form"""
     team = forms.ChoiceField(choices=USER_TEAM)
 
     class Meta(UserCreationForm.Meta):
+        """Meta class for fields"""
         model = User
         fields = ('first_name',
-                 'last_name',
-                 'email',
-                 'team'
-                    )
-
+                  'last_name',
+                  'email',
+                  'team'
+                  )
 
 
 class DeleteBlogForm(forms.Form):
+    """Delete form"""
     delete_blog = forms.BooleanField(widget=forms.HiddenInput, initial=True)

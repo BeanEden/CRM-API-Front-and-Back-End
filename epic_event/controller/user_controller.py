@@ -5,8 +5,9 @@ from epic_event.serializers import UserDetailSerializer
 
 def user_permission_redirect_read_only(request, context):
     """Docstring"""
-    if request.user.team != "management" :
-        return render(request, 'user/user_read_only.html', context=context['user'])
+    if request.user.team != "management":
+        return render(request, 'user/user_read_only.html',
+                      context=context['user'])
     return render(request, 'user/user_detail.html', context=context)
 
 
@@ -20,6 +21,7 @@ def user_read_only_toggle(request, context):
                       context=context)
     return "good"
 
+
 def update_user(request, user):
     """Docstring"""
     serializer = UserDetailSerializer(data=request.data, instance=user)
@@ -32,6 +34,7 @@ def update_user(request, user):
                                'serializer': serializer, 'event': user})
     return render(request, 'event/event_detail.html',
                   context={'serializer': serializer, 'event': user})
+
 
 def delete_user(request, user):
     """Docstring"""

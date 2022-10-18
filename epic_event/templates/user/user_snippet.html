@@ -1,5 +1,12 @@
-    <div class="snippet">
+{%  load static %}
+
+<div class="snippet">
+    {% if  user.team == 'management' %}
+        <img class="snippet_img_bg" src="{% static 'images/users/management_user.png'%}">
+    {% elif  user.team == 'support' %}
+        <img class="snippet_img_bg" src="{% static 'images/users/user_support.png'%}">
+    {% endif %}
         <p>username : {{ user.username }}</p>
         <p>team : {{ user.team }}</p>
         <p>email : {{ user.email }}</p>
-    </div>
+</div>

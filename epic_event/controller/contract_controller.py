@@ -8,7 +8,8 @@ from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.permissions import IsAuthenticated
 from epic_event.views.general_view import PaginatedViewMixin
 from epic_event.models.event import Event, Contract
-from epic_event.serializers import ContractDetailSerializer
+from epic_event.serializers import ContractSerializer
+from .utilities import error_log
 
 
 User = get_user_model()
@@ -29,65 +30,27 @@ class ContractListView(APIView, PaginatedViewMixin):
         return Response({'contracts': posts_paged})
 
 
-class UserContractListView(APIView, PaginatedViewMixin):
-    """Contract list of a user"""
-    renderer_classes = [TemplateHTMLRenderer]
-    template_name = 'contract/contract_list.html'
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        """Get all contracts related to a user"""
-        if request.user.team == 'management':
-            queryset = Contract.objects.all()
-        elif request.user.team == "sales":
-            queryset = Contract.objects.filter(sales_contact=request.user)
-        elif request.user.team == "support":
-            wanted_items = set()
-            for item in Event.objects.filter(support_contact=request.user):
-                wanted_items.add(item.id)
-            queryset = Contract.objects.filter(pk__in=wanted_items)
-        else:
-            return redirect('home')
-        posts_paged = self.paginate_view(
-            request, sorted(queryset,
-                            key=lambda x: x.date_updated, reverse=False))
-        return Response({'contracts': posts_paged})
-
-
-class CustomerContractListView(APIView, PaginatedViewMixin):
-    """Contract list of a customer"""
-    renderer_classes = [TemplateHTMLRenderer]
-    template_name = 'contract/contract_list.html'
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request, customer_id):
-        """Get all contracts related to a customer"""
-        queryset = Contract.objects.filter(customer_id=customer_id)
-        posts_paged = self.paginate_view(
-            request, sorted(queryset,
-                            key=lambda x: x.date_updated, reverse=False))
-        return Response({'contracts': posts_paged})
-
-
 def create_contract_permission_redirect(request):
     """Redirect if trying to create a contract while unauthorized"""
     if request.user.team == "support":
         flash = "You don't have permission to access this page"
+        log_entry = error_log(request=request,
+                              text="tried unauthorized contract creation")
         return render(request, 'home.html', context={'flash': flash})
     return "authorized to create a contract"
 
 
 def create_contract_prefilled_serializer(request, customer):
     """Prefill the contract serializer form"""
-    serializer = ContractDetailSerializer()
+    serializer = ContractSerializer()
     if request.user.team == "sales":
-        serializer = ContractDetailSerializer(data={
+        serializer = ContractSerializer(data={
             "sales_contact": request.user.id,
             "customer_id": customer.id},
             partial=True)
         serializer.is_valid()
     if request.user.team == "management":
-        serializer = ContractDetailSerializer(data={
+        serializer = ContractSerializer(data={
             "sales_contact": customer.sales_contact,
             "customer_id": customer.id},
             partial=True)
@@ -131,7 +94,7 @@ def contract_read_only_toggle(request, context):
 
 def create_contract(request, customer):
     """create contract_controller"""
-    serializer = ContractDetailSerializer(data=request.data)
+    serializer = ContractSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
         contract_list = Contract.objects.filter(
@@ -147,7 +110,7 @@ def create_contract(request, customer):
 
 def update_contract(request, contract):
     """update contract controller"""
-    serializer = ContractDetailSerializer(data=request.data, instance=contract)
+    serializer = ContractSerializer(data=request.data, instance=contract)
     if serializer.is_valid():
         serializer.save()
         contract_list = Contract.objects.filter(

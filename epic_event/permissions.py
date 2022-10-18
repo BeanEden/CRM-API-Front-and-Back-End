@@ -10,6 +10,7 @@ class IsManagementTeam(permissions.BasePermission):
         else:
             return False
 
+
 class IsAllowedOrReadOnly(permissions.BasePermission):
     """
     Object-level permission to only allow owners of an object to edit it.
