@@ -110,7 +110,9 @@ class NoEventContractListView(APIView, PaginatedViewMixin):
 @login_required()
 def contract_create_view(request, customer_id):
     """View of contract creation"""
-    create_contract_permission_redirect(request=request)
+    check = create_contract_permission_redirect(request=request)
+    if check != "authorized":
+        return check
     customer = get_object_or_404(Customer, id=customer_id)
     serializer = create_contract_prefilled_serializer(request=request,
                                                       customer=customer)
@@ -126,7 +128,9 @@ def contract_create_view(request, customer_id):
 def contract_detail_view(request, contract_id):
     """Contract detail view (get / update/delete"""
     contract = get_object_or_404(Contract, id=contract_id)
-    contract_read_only_permission_redirect(request=request, contract=contract)
+    check = contract_read_only_permission_redirect(request=request, contract=contract)
+    if check != "authorized":
+        return check
     serializer = ContractSerializer(contract)
     context = contract_detail_context_with_event_or_not(serializer=serializer,
                                                         contract=contract)

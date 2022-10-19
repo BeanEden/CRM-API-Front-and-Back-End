@@ -42,7 +42,9 @@ def user_detail_view(request, user_id):
     user = get_object_or_404(User, id=user_id)
     serializer = UserDetailSerializer(user)
     context = {'user': user, 'serializer': serializer}
-    user_permission_redirect_read_only(request=request, context=context)
+    check = user_permission_redirect_read_only(request=request, context=context)
+    if check != "authorized":
+        return check
     if "read_only" in request.POST:
         return user_read_only_toggle(request=request, context=context)
     if "update_user" in request.POST:

@@ -59,7 +59,8 @@ class UserEventListView(APIView, PaginatedViewMixin):
         posts_paged = self.paginate_view(
             request, sorted(queryset,
                             key=lambda x: x.date_updated, reverse=False))
-        context = {'events': posts_paged, 'title': 'Events list - '+ str(user)}
+        context = {'events': posts_paged, 'title': 'Events list - ' +
+                                                   str(user)}
         return Response(context)
 
 
@@ -114,11 +115,15 @@ class UnassignedEventListView(APIView, PaginatedViewMixin):
 @login_required()
 def event_create_view(request, contract_id):
     """Docstring"""
-    create_event_permission_redirect(request)
+    check = create_event_permission_redirect(request)
+    if check != "authorized":
+        return check
     contract = get_object_or_404(Contract, id=contract_id)
-    create_event_check_contract_already_has_an_event_redirect(
+    check = create_event_check_contract_already_has_an_event_redirect(
         request=request,
         contract=contract)
+    if check != "authorized":
+        return check
     serializer = create_event_serializer_filling(contract=contract)
     if "create" in request.POST:
         return create_event(request=request, contract=contract)
@@ -131,7 +136,9 @@ def event_create_view(request, contract_id):
 def event_detail_view(request, event_id):
     """Event detail view (get, update, delete"""
     event = get_object_or_404(Event, id=event_id)
-    event_permission_redirect_read_only(request=request, event=event)
+    check = event_permission_redirect_read_only(request=request, event=event)
+    if check != "authorized":
+        return check
     serializer = EventSerializer(event)
     context = {'serializer': serializer, 'event': event}
     if "read_only" in request.POST:
@@ -149,7 +156,9 @@ def event_detail_view(request, event_id):
 def contract_event_detail_view(request, contract_id):
     """Event detail linked to a contract"""
     event = get_object_or_404(Event, id=contract_id)
-    event_permission_redirect_read_only(request=request, event=event)
+    check = event_permission_redirect_read_only(request=request, event=event)
+    if check != "authorized":
+        return check
     serializer = EventSerializer(event)
     context = {'serializer': serializer, 'event': event}
     if "read_only" in request.POST:

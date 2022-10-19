@@ -77,10 +77,12 @@ class MyCustomerListView(LoginRequiredMixin, APIView, PaginatedViewMixin):
 @login_required()
 def customer_create_view(request):
     """Customer creation view"""
-    create_customer_permission_redirect(request=request)
+    check = create_customer_permission_redirect(request=request)
+    if check != "authorized":
+        return check
     serializer = CustomerSerializer()
     if "create_customer" in request.POST:
-        print("post")
+        print(check)
         return create_customer(request=request)
     return render(request, 'customer/customer_create.html',
                   context={'serializer': serializer})
@@ -92,7 +94,9 @@ def customer_create_view(request):
 def customer_detail_view(request, customer_id):
     """Customer detailed view"""
     customer = get_object_or_404(Customer, id=customer_id)
-    customer_permission_redirect_read_only(request=request, customer=customer)
+    check = customer_permission_redirect_read_only(request=request, customer=customer)
+    if check != "authorized":
+        return check
     serializer = CustomerSerializer(customer)
     if "update_customer" in request.POST:
         return update_customer(request=request, customer=customer)

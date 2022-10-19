@@ -24,7 +24,7 @@ class Contract(models.Model):
     date_updated = models.DateTimeField(auto_now=True)
     status = models.BooleanField(default=True)
     amount = models.FloatField(default=0, validators=[MinValueValidator(0)])
-    payment_due = models.DateTimeField(default=None,
+    payment_due = models.DateTimeField(null=True,
                                        validators=[validate_future_date])
     event_associated = models.CharField(max_length=20, choices=EVENT_STATUS,
                                         default="uncomplete")

@@ -1,14 +1,15 @@
 """User controller"""
 from django.shortcuts import render
 from epic_event.serializers import UserDetailSerializer
+from .utilities import error_log
 
 
 def user_permission_redirect_read_only(request, context):
     """Docstring"""
     if request.user.team != "management":
         return render(request, 'user/user_read_only.html',
-                      context=context['user'])
-    return render(request, 'user/user_detail.html', context=context)
+                      context=context)
+    return "authorized"
 
 
 def user_read_only_toggle(request, context):
@@ -19,7 +20,7 @@ def user_read_only_toggle(request, context):
     if request.POST['read_only'] == "update_mode_on":
         return render(request, 'event/event_detail.html',
                       context=context)
-    return "good"
+    return "authorized"
 
 
 def update_user(request, user):
@@ -32,6 +33,8 @@ def update_user(request, user):
         return render(request, 'event/event_read_only.html',
                       context={'flash': flash,
                                'serializer': serializer, 'event': user})
+    error_log(request=request,
+              text="unvalid serializer: " + str(serializer.errors))
     return render(request, 'event/event_detail.html',
                   context={'serializer': serializer, 'event': user})
 
@@ -40,6 +43,8 @@ def delete_user(request, user):
     """Docstring"""
     if request.user.team != "management":
         flash = "You don't have permission to access this page"
+        error_log(request=request,
+                              text="tried unauthorized user deletion")
         return render(request, 'home.html', context={'flash': flash})
     name = str(user)
     user.delete()

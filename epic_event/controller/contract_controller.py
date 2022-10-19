@@ -1,7 +1,7 @@
 """Controller function for contact views"""
 
 from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, render
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.renderers import TemplateHTMLRenderer
@@ -9,7 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from epic_event.views.general_view import PaginatedViewMixin
 from epic_event.models.event import Event, Contract
 from epic_event.serializers import ContractSerializer
-from .utilities import error_log
+from epic_event.controller.utilities import error_log
 
 
 User = get_user_model()
@@ -34,10 +34,10 @@ def create_contract_permission_redirect(request):
     """Redirect if trying to create a contract while unauthorized"""
     if request.user.team == "support":
         flash = "You don't have permission to access this page"
-        log_entry = error_log(request=request,
-                              text="tried unauthorized contract creation")
+        error_log(request=request,
+                  text="tried unauthorized contract creation")
         return render(request, 'home.html', context={'flash': flash})
-    return "authorized to create a contract"
+    return "authorized"
 
 
 def create_contract_prefilled_serializer(request, customer):
@@ -60,7 +60,6 @@ def create_contract_prefilled_serializer(request, customer):
 
 def contract_detail_context_with_event_or_not(serializer, contract):
     """Decide what context to use (if event associated)"""
-    context = {}
     if contract.event_associated == "complete":
         event = get_object_or_404(Event, contract_id=contract)
         context = {'serializer': serializer, 'contract': contract,
@@ -104,6 +103,8 @@ def create_contract(request, customer):
         flash = "Contract " + name + " with customer " + str(
             customer) + " has successfully been created"
         return render(request, 'home.html', context={'flash': flash})
+    error_log(request=request,
+              text="unvalid serializer: " + str(serializer.errors))
     return render(request, 'contract/contract_create.html',
                   context={'serializer': serializer, 'customer': customer})
 
@@ -122,6 +123,8 @@ def update_contract(request, contract):
     context = contract_detail_context_with_event_or_not(
         serializer=serializer,
         contract=contract)
+    error_log(request=request,
+              text="unvalid serializer: " + str(serializer.errors))
     return render(request, 'contract/contract_detail.html',
                   context=context)
 
@@ -130,6 +133,8 @@ def delete_contract(request, contract):
     """celete contract controller"""
     if request.user.team != "management":
         flash = "You don't have permission to access this page"
+        error_log(request=request,
+                  text="tried unauthorized contract deletion")
         return render(request, 'home.html', context={'flash': flash})
     name = contract
     contract.delete()

@@ -20,6 +20,6 @@
             {% include 'event/event_snippet.html' with event=instance %}
             {% endif %}
         {% endfor %}
+        {% include 'partials\page_navigator.html' %}
     </div>
-    {% include 'partials\page_navigator.html' %}
 {% endblock content %}

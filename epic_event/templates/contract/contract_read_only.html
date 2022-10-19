@@ -62,11 +62,17 @@
 </table>
     <div class=customer-buttons>
     <a href="{% url 'customer_detail' contract.customer_id.id %}"><button>See the customer</button></a>
-    <a href="{% url 'event_detail' contract.id %}"><button>See the event</button></a>
+    {% if contract.event_associated == "complete"%}
+        <a href="{% url 'event_detail' contract.id %}"><button>See the event</button></a>
+        {% else %}
+        <p>No event associated yet</p>
+    {% endif %}
     </div>
 </div>
-    {% if contract.event_associated == "uncomplete" %}
+    {% if contract.event_associated == "uncomplete"%}
+        {% if request.user.team != "support" %}
         <a href="{% url 'event_create' contract.id %}"><button>Add an event</button></a>
+        {% endif %}
         {% else %}
         <p> a {{contract.event_associated}} contract.id</p>
         {% include 'event/event_snippet.html' with contract=contract %}
