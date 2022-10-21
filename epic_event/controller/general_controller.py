@@ -90,3 +90,5 @@ def search_user(query):
             Q(username__icontains=query)),
         key=attrgetter('date_updated'))
     return result_list
+
+print("e")
