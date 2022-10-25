@@ -4,38 +4,40 @@
 {% block content %}
 
 <h1>Customer - {{ customer }}</h1>
-{# <!-- Rectangular switch -->#}
-{#<label class="switch">#}
-{#  <input type="checkbox">#}
-{#  <span class="slider"></span>#}
-{#</label>#}
-{##}
-{#<!-- Rounded switch -->#}
-{#<label class="switch">#}
-{#  <input type="checkbox">#}
-{#  <span class="slider round"></span>#}
-{#</label>#}
-<div class="customer form"></div>
+
+{% if request.user.team != "support" %}
+    <form method="POST">
+        {% csrf_token %}
+        <button class="toggle-btn" type="submit" name="read_only" value = "update_mode_off"><img src="{% static 'images/update_keylock.png'%}"></button>
+    </form>
+    {% endif %}
+
+<div class="update-form">
 <form method="POST">
     {% csrf_token %}
     {% render_form serializer %}
-    <input type="submit" name="update_customer" value="Save">
+    <input class="update-button" type="submit" name="update_customer" value="Save">
 </form>
 
 {% if request.user.team == "management" %}
-{#<a href="{% url 'customer_delete' customer.id %}"><button>Delete customer</button></a>#}
 
 <div class="submit-form">
     <form method="POST" enctype="multipart/form-data">
         {{ delete_form }}
         {% csrf_token %}
-        <input type="submit" name="delete_customer" value="Delete">
+        <input class="delete-button" type="submit" name="delete_customer" value="Delete">
     </form>
-    </div>
+</div>
+</div>
     {% endif %}
+{% endblock content %}
+
+
+{% block right-side %}
+
         <div class=customer-buttons>
         <a href="{% url 'contract_create' customer.id %}"><button><img src="{% static 'images/add_contract.png'%}">Add a contract</button></a>
             <a href="{% url 'contract_list' %}"><button><img src="{% static 'images/contrat_list.png'%}">Ongoing contracts</button></a>
                 <a href="{% url 'customer_event_list' customer.id %}"><button>Events associated</button></a>
     </div>
-{% endblock content %}
+{% endblock right-side %}

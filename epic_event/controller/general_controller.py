@@ -1,5 +1,6 @@
 """General views controller (feeds)"""
 import datetime
+from itertools import chain
 from operator import attrgetter
 from django.contrib.auth import get_user_model
 from django.db.models import Q
@@ -25,6 +26,27 @@ CONTRACT_NOTIFICATIONS = {
     'status': ['Contract closed before payment date',
                'Update contract']
                  }
+
+
+
+
+def get_last_posts_selected(query):
+    posts = ""
+    if query == None:
+        customers = Customer.objects.all()
+        contracts = Contract.objects.all()
+        events = Event.objects.all()
+        posts = chain(customers, contracts, events)
+    elif query == 'customers':
+        posts = Customer.objects.all()
+    elif query == 'contracts':
+        posts = Contract.objects.all()
+    elif query == 'events':
+        posts = Event.objects.all()
+    return posts
+
+
+
 
 
 def check_contract(contract_list):
@@ -90,5 +112,3 @@ def search_user(query):
             Q(username__icontains=query)),
         key=attrgetter('date_updated'))
     return result_list
-
-print("e")

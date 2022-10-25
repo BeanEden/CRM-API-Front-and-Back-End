@@ -1,9 +1,17 @@
 {% extends 'base.html' %}
 {% load rest_framework %}
+{% load static %}
 
 {% block content %}
+<h1>Customer - {{ customer }}</h1>
 
-{% load static %}
+{%  if request.user.team != "support" %}
+    <form method="POST">
+        {% csrf_token %}
+        <button class=toggle-btn type="submit" name="read_only" value = "update_mode_on"><img src="{% static 'images/update_pen.png'%}"></button>
+    </form>
+    {% endif %}
+
 <div class="snippet">
         {% if  customer.status == 'prospect' %}
             <img class="customer-banner" src="{% static 'images/customers/banner_down_prospect_small.png'%}">
@@ -20,7 +28,7 @@
     {% if customer.company_name%}
         <thead>
             <tr>
-                <td class="td-infos">company :</td>
+                <td class="td-infos">company : </td>
                 <td class = titre>{{ customer.company_name}}</td>
             </tr>
         </thead>
@@ -31,33 +39,33 @@
     {% else %}
         <thead>
             <tr>
-                <td class="td-infos">customer :</td>
+                <td class="td-infos">customer : </td>
                 <td class = titre>{{ customer.first_name }} {{ customer.last_name }}</td>
             </tr>
         </thead>
     {% endif %}
         <tbody>
             <tr>
-                <td class="td-infos">sales_contact :</td>
+                <td class="td-infos">sales_contact : </td>
                 <td>{{ customer.sales_contact.username }}</td>
             </tr>
             <tr>
-                <td class="td-infos">mobile :</td>
+                <td class="td-infos">mobile : </td>
                 <td>{{ customer.mobile }}</td>
             <tr>
-                <td class="td-infos">phone :</td>
+                <td class="td-infos">phone : </td>
                 <td>{{ customer.phone }}</td>
             </tr>
             <tr>
-                <td class="td-infos">email</td>
+                <td class="td-infos">email : </td>
                 <td>{{ customer.mail }}</td>
             </tr>
             <tr>
-                <td class="td-infos">date_created</td>
+                <td class="td-infos">date_created : </td>
                 <td>{{ customer.date_created }}</td>
             </tr>
             <tr>
-                <td class="td-infos">status</td>
+                <td class="td-infos">status :</td>
                 <td>{{ customer.status }}</td>
             </tr>
 </table>

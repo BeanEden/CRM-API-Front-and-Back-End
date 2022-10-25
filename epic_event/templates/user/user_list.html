@@ -2,13 +2,17 @@
 {% load rest_framework %}
 {% block content %}
     <h2>Users List of {{ request.user.first_name }} {{ request.user.last_name }} - {{ request.user.team }}</h2>
-{#    <form action="{% url 'user_list' %}" method="POST">#}
-{#    {% csrf_token %}#}
-{#    {% render_form { serializer } %}#}
-{#    <input type="submit" value="Save">#}
-{#</form>#}
 
-    <div class="grid-container">
+    <div class="btn-group btn-group-justified">
+        <a href="{% url 'user_list' %}"><button class="btn btn-primary" style="width: 33.3%">All users</button></a>
+
+        <form action="{% url 'user_list' %}" method="get">
+        <button type="submit" value="related" name="search" class="btn btn-primary" style="width: 33.3%">Related to me</button></form>
+
+        <form action="{% url 'user_list' %}" method="get">
+        <button type="submit" value="unassigned" name="search" class="btn btn-primary" style="width: 33.3%">Unassigned</button></form>
+    </div>
+    <div class="feed">
     {% for user in users %}
         {% include 'user/user_snippet.html' with user=user %}
         <div class="modal">
@@ -21,10 +25,6 @@
             </div>
         {% endif %}
     {% endfor %}
-
-    </div>
      {% include 'partials\page_navigator.html' %}
-
-
-
+    </div>
 {% endblock content %}

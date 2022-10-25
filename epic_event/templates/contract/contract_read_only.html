@@ -1,19 +1,17 @@
 {% extends 'base.html' %}
 {% load rest_framework %}
-
+{% load static %}
 {% block content %}
 
 <h1>Contract - {{ contract }}</h1>
 
-    {%  if request.user.team != "support" %}
-    <label class="switch">
+{%  if request.user.team != "support" %}
     <form method="POST">
-            {% csrf_token %}
-  <input type="submit" name="read_only" value = "update_mode_on">
-  <span class="slider round"></span>
+        {% csrf_token %}
+        <button class=toggle-btn type="submit" name="read_only" value = "update_mode_on"><img src="{% static 'images/update_pen.png'%}"></button>
     </form>
-</label>
     {% endif %}
+
 
 
 <div class="snippet">
@@ -22,7 +20,7 @@
     {% if contract.name%}
         <thead>
             <tr>
-                <td class="td-infos">name :</td>
+                <td class="td-infos">name : </td>
                 <td class = titre>{{ contract.name}}</td>
             </tr>
         </thead>
@@ -33,29 +31,29 @@
     {% else %}
         <thead>
             <tr>
-                <td class="td-infos">customer :</td>
+                <td class="td-infos">customer : </td>
                 <td class = titre>{{ contract.customer_id }}</td>
             </tr>
         </thead>
     {% endif %}
         <tbody>
             <tr>
-                <td class="td-infos">sales_contact :</td>
+                <td class="td-infos">sales_contact : </td>
                 <td>{{ contract.sales_contact.username }}</td>
             </tr>
-                <td class="td-infos">amount :</td>
+                <td class="td-infos">amount : </td>
                 <td>{{ contract.amount }}</td>
             </tr>
             <tr>
-                <td class="td-infos">payment_due</td>
+                <td class="td-infos">payment_due : </td>
                 <td>{{ contract.payment_due }}</td>
             </tr>
             <tr>
-                <td class="td-infos">date_created</td>
+                <td class="td-infos">date_created : </td>
                 <td>{{ contract.date_created }}</td>
             </tr>
             <tr>
-                <td class="td-infos">status</td>
+                <td class="td-infos">status : </td>
                 <td>{{ contract.status }} </td>
             </tr>
         </tbody>
@@ -69,6 +67,10 @@
     {% endif %}
     </div>
 </div>
+
+
+{% endblock content %}
+{% block right-side %}
     {% if contract.event_associated == "uncomplete"%}
         {% if request.user.team != "support" %}
         <a href="{% url 'event_create' contract.id %}"><button>Add an event</button></a>
@@ -77,5 +79,4 @@
         <p> a {{contract.event_associated}} contract.id</p>
         {% include 'event/event_snippet.html' with contract=contract %}
     {% endif %}
-
-{% endblock content %}
+{% endblock right-side %}

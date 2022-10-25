@@ -1,22 +1,24 @@
 {% extends 'base.html' %}
 {% load rest_framework %}
 {% load static %}
+{% load review_extras %}
 {% block content %}
 
-<h1>Event - {{ contract_id }}</h1>
+<h1>Event - {{ event.contract_id }}</h1>
 
 {% if request.user.team != "support" %}
     <form method="POST">
         {% csrf_token %}
-        <button type="submit" name="read_only" value = "update_mode_off"><img src="{% static 'images/update_keylock.png'%}"></button>
+        <button class="toggle-btn" type="submit" name="read_only" value = "update_mode_off"><img src="{% static 'images/update_keylock.png'%}"></button>
     </form>
     {% endif %}
 
-<form method="POST">
-    {% csrf_token %}
-    {% render_form serializer %}
-    <input type="submit" name="update_event" value="Save">
-</form>
+<div class="update-form">
+    <form method="POST">
+        {% csrf_token %}
+        {% render_form serializer %}
+        <input class="update-button" type="submit" name="update_event" value="Save">
+    </form>
 
 {% if request.user.team == "management" %}
 
@@ -24,8 +26,13 @@
     <form method="POST" enctype="multipart/form-data">
         {{ delete_form }}
         {% csrf_token %}
-        <input type="submit" name="delete_event" value="Delete">
+        <input class="delete-button" type="submit" name="delete_event" value="Delete">
     </form>
 </div>
+
     {% endif %}
+    </div>
 {% endblock content %}
+{% block right-side %}
+
+{% endblock right-side %}

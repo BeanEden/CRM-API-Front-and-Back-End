@@ -20,7 +20,8 @@ from epic_event.controller.customer_controller import \
     create_customer, \
     create_customer_permission_redirect, \
     user_customer_queryset, \
-    my_customers_queryset
+    my_customers_queryset, unactive_customers_queryset, \
+    customer_read_only_toggle
 
 
 User = get_user_model()
@@ -72,6 +73,22 @@ class MyCustomerListView(LoginRequiredMixin, APIView, PaginatedViewMixin):
         return Response({'customers': posts_paged})
 
 
+class UnactiveCustomerListView(LoginRequiredMixin, APIView, PaginatedViewMixin):
+    """All customer linked to the logged user"""
+    permission_classes = [IsAuthenticated]
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'customer/customer_list.html'
+
+    def get(self, request):
+        """get method"""
+        queryset = unactive_customers_queryset()
+        posts_paged = self.paginate_view(
+            request, sorted(queryset,
+                            key=lambda x: x.date_updated, reverse=False))
+        return Response({'customers': posts_paged})
+
+
+
 @api_view(('GET', 'POST'))
 @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
 @login_required()
@@ -82,7 +99,6 @@ def customer_create_view(request):
         return check
     serializer = CustomerSerializer()
     if "create_customer" in request.POST:
-        print(check)
         return create_customer(request=request)
     return render(request, 'customer/customer_create.html',
                   context={'serializer': serializer})
@@ -98,6 +114,10 @@ def customer_detail_view(request, customer_id):
     if check != "authorized":
         return check
     serializer = CustomerSerializer(customer)
+    context = {'serializer': serializer, 'customer': customer}
+    if "read_only" in request.POST:
+        return customer_read_only_toggle(request=request,
+                                         context=context)
     if "update_customer" in request.POST:
         return update_customer(request=request, customer=customer)
     if "delete_customer" in request.POST:

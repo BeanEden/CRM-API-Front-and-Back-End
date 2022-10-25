@@ -1,4 +1,5 @@
 """Customer controller"""
+from itertools import chain
 from django.contrib.auth import get_user_model
 from django.shortcuts import render, redirect, get_object_or_404
 from epic_event.serializers import CustomerSerializer
@@ -39,7 +40,6 @@ def create_customer(request):
         serializer.save()
         customer = get_object_or_404(Customer, id=serializer.data['id'])
         customer.checking_profile_complete()
-        print(customer.profile)
         name = serializer.data["first_name"] + ' ' + serializer.data["last_name"]
         flash = "Customer " + name + " has been successfully created"
         return render(request, 'home.html', context={'flash': flash}), \
@@ -55,7 +55,6 @@ def update_customer(request, customer):
     if serializer.is_valid():
         serializer.save()
         customer.checking_profile_complete()
-        print(customer.profile)
         name = str(customer)
         flash = "Customer " + name + " has been successfully updated"
         redirect('home', )
@@ -106,3 +105,22 @@ def my_customers_queryset(request):
             wanted_items.add(item.id)
         queryset = Customer.objects.filter(pk__in=wanted_items)
     return queryset
+
+
+def unactive_customers_queryset():
+    """Customer queryset of the request.user"""
+    prospects = Customer.objects.filter(status = 'prospect')
+    unactive = Customer.objects.filter(status = 'unactive')
+    queryset = chain(prospects, unactive)
+    return queryset
+
+
+def customer_read_only_toggle(request, context):
+    """Docstring"""
+    if request.POST['read_only'] == "update_mode_off":
+        return render(request, 'customer/customer_read_only.html',
+                      context=context)
+    if request.POST['read_only'] == "update_mode_on":
+        return render(request, 'customer/customer_detail.html',
+                      context=context)
+    return "authorized"

@@ -2,10 +2,16 @@
 {% load rest_framework %}
 {% block content %}
     <h1>{{ title }}</h1>
-    <div class="grid-container">
+    <div class="btn-group btn-group-justified">
+        <a href="{% url 'event_list' %}"><button class="btn btn-primary" style="width: 33.3%">All events</button></a>
+        <a href="{% url 'my_event_list' %}"><button class="btn btn-primary" style="width: 33.3%">Related to me</button></a>
+        <a href="{% url 'unassigned_event_list' %}"><button class="btn btn-primary" style="width: 33.3%">Unassigned</button></a>
+    </div>
+    <div class="feed">
     {% for event in events %}
         {% include 'event/event_snippet.html' with event=event %}
     {% endfor %}
+         {% include 'partials\page_navigator.html' %}
     </div>
-     {% include 'partials\page_navigator.html' %}
+
 {% endblock content %}

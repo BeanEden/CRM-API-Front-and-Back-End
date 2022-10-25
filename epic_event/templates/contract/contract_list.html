@@ -1,14 +1,20 @@
 {% extends 'base.html' %}
 {% load rest_framework %}
 {% block content %}
-    <h2>Contract List of {{ request.user.first_name }} {{ request.user.last_name }} - {{ request.user.team }}</h2>
+    <h2>Contract list of {{ request.user.first_name }} {{ request.user.last_name }} - {{ request.user.team }}</h2>
 {#    <form action="{% url 'user_list' %}" method="POST">#}
 {#    {% csrf_token %}#}
 {#    {% render_form { serializer } %}#}
 {#    <input type="submit" value="Save">#}
 {#</form>#}
 
-    <div class="grid-container">
+
+    <div class="btn-group btn-group-justified">
+        <a href="{% url 'contract_list' %}"><button class="btn btn-primary" style="width: 33.3%">All contracts</button></a>
+        <a href="{% url 'my_contract_list' %}"><button class="btn btn-primary" style="width: 33.3%">Related to me</button></a>
+        <a href="{% url 'no_event_contract_list' %}"><button class="btn btn-primary" style="width: 33.3%">No events assigned</button></a>
+    </div>
+       <div class="feed">
     {% for contract in contracts %}
         {% include 'contract/contract_snippet.html' with contract=contract %}
         {% if request.user.team == management %}

@@ -3,24 +3,55 @@
 {% load static %}
 
 {% block content %}
-        {%  if request.user.team != "support" %}
+
+    <h1>Event - {{ event.contract_id }}</h1>
+
+{%  if request.user.team != "support" %}
     <form method="POST">
         {% csrf_token %}
-        <button type="submit" name="read_only" value = "update_mode_on"><img src="{% static 'images/update_pen.png'%}"></button>
+        <button class="toggle-btn" type="submit" name="read_only" value = "update_mode_on"><img src="{% static 'images/update_pen.png'%}"></button>
     </form>
-</button>
-    {% endif %}
+{% endif %}
 
-        <div class="snippet">
-        <p class = "date">{{ event.date_updated }}</p>
-        <p>customer : {{ event.customer_id }}</p>
-        <p>attendees : {{ event.attendees }}</p>
-        <p>notes : {{ event.notes }}</p>
-        {% if user.team != 'sales' %}
-            <div class = "edit-button">
-                <a href="{% url 'event_detail' event.id %}"><button>Modifier</button></a>
-            </div>
-        {% endif %}
-    </div>
-{% endblock %}
-
+<div class="snippet">
+    <img class="snippet_img_bg" src="{% static 'images/event/event_bg_light.png'%}">
+<table>
+    <thead>
+            <tr>
+                <td class="td-infos">contract_name :</td>
+                <td class = titre>{{ event.contract_id }}</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="td-infos">customer :</td>
+                <td>{{ event.customer_id }}</td>
+            </tr>
+            <tr>
+                <td class="td-infos">support_contact :</td>
+                <td>{{ event.support_contact }}</td>
+            </tr>
+            <tr>
+                <td class="td-infos">attendees :</td>
+                <td>{{ event.attendees }}</td>
+            </tr>
+            <tr>
+                <td class="td-infos">event_date :</td>
+                <td>{{ event.event_date }}</td>
+            </tr>
+            <tr>
+                <td class="td-infos">date_created :</td>
+                <td>{{ event.date_created }}</td>
+            </tr>
+            <tr>
+                <td class="td-infos">date_updated :</td>
+                <td>{{ event.date_updated }}</td>
+            </tr>
+            <tr>
+                <td class="td-infos">notes :</td>
+                <td>{{ event.notes }}</td>
+            </tr>
+        </tbody>
+</table>
+</div>
+{% endblock content %}

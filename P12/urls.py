@@ -9,14 +9,14 @@ from django.urls import path
 from epic_event.views.user_view import UserListView, user_detail_view
 from epic_event.views.customer_view import CustomerListView, \
     MyCustomerListView, UserCustomerListView, customer_detail_view, \
-    customer_create_view
+    customer_create_view, UnactiveCustomerListView
 from epic_event.views.contract_view import ContractListView, \
     NoEventContractListView, CustomerContractListView, MyContractListView, \
     UserContractListView, contract_create_view, contract_detail_view
 from epic_event.views.event_view import EventListView, CustomerEventListView, \
     MyEventListView, UserEventListView, UnassignedEventListView, \
     event_create_view, event_detail_view, contract_event_detail_view
-from epic_event.views.general_view import GlobalFeed, search
+from epic_event.views.general_view import GlobalFeed, search, search_events, search_users, search_customers, search_contracts
 from authentication.views import SignUpView
 
 
@@ -42,6 +42,11 @@ urlpatterns = [
 
     path('home/', GlobalFeed.as_view(), name='home'),
     path('search/', search, name='search'),
+    path('search_customers/', search_customers, name='search_customers'),
+    path('search_contracts/', search_contracts, name='search_contracts'),
+    path('search_events/', search_events, name='search_events'),
+    path('search_users/', search_users, name='search_users'),
+
 
     # -------------------------USER PAGES-------------------------#
     path('user_list/', UserListView.as_view(), name='user_list'),
@@ -57,6 +62,8 @@ urlpatterns = [
          name='user_customer_list'),
     path('my_customer_list/', MyCustomerListView.as_view(),
          name='my_customer_list'),
+    path('unactive_customer_list/', UnactiveCustomerListView.as_view(),
+         name='unactive_customer_list'),
 
 
     # -------------------------CONTRACT PAGES-------------------------#

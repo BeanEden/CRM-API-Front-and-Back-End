@@ -9,7 +9,7 @@ from epic_event.models.contract import Contract
 from epic_event.models.customer import Customer
 from epic_event.controller.general_controller import search_event, \
     search_contract, \
-    search_customer, search_user
+    search_customer, search_user, get_last_posts_selected
 
 from rest_framework.views import APIView
 
@@ -53,11 +53,10 @@ class GlobalFeed(LoginRequiredMixin, APIView, PaginatedViewMixin):
         argument: GET request
         return: url + page_object (= paginated posts)
         """
-        customers = Customer.objects.all()
-        contracts = Contract.objects.all()
-        events = Event.objects.all()
+        query = request.GET.get('search')
+        posts = get_last_posts_selected(query)
         posts_paged = self.paginate_view(
-            request, sorted(chain(customers, contracts, events),
+            request, sorted(posts,
                             key=lambda x: x.date_updated, reverse=True))
         return render(request, self.template_name,
                       context={'page_obj': posts_paged})
@@ -76,6 +75,65 @@ def search(request):
         events = search_event(query)
         users = search_user(query)
         posts_paged = sorted(chain(customers, contracts, events, users),
+                             key=lambda x: x.date_updated, reverse=True)
+    return render(request, 'home.html', {'query': query,
+                                         'page_obj': posts_paged})
+
+
+def search_customers(request):
+    """Global search result"""
+    posts_paged = []
+    query = ""
+    if request.method == "GET":
+        query = request.GET.get('search')
+        if query == '':
+            query = 'None'
+        customers = search_customer(query)
+        posts_paged = sorted(customers,
+                             key=lambda x: x.date_updated, reverse=True)
+    return render(request, 'home.html', {'query': query,
+                                         'page_obj': posts_paged})
+
+
+def search_contracts(request):
+    """Global search result"""
+    posts_paged = []
+    query = ""
+    if request.method == "GET":
+        query = request.GET.get('search')
+        if query == '':
+            query = 'None'
+        contracts = search_contract(query)
+        posts_paged = sorted(contracts,
+                             key=lambda x: x.date_updated, reverse=True)
+    return render(request, 'home.html', {'query': query,
+                                         'page_obj': posts_paged})
+
+def search_events(request):
+    """Global search result"""
+    posts_paged = []
+    query = ""
+    if request.method == "GET":
+        query = request.GET.get('search')
+        if query == '':
+            query = 'None'
+        events = search_event(query)
+        posts_paged = sorted(events,
+                             key=lambda x: x.date_updated, reverse=True)
+    return render(request, 'home.html', {'query': query,
+                                         'page_obj': posts_paged})
+
+
+def search_users(request):
+    """Global search result"""
+    posts_paged = []
+    query = ""
+    if request.method == "GET":
+        query = request.GET.get('search')
+        if query == '':
+            query = 'None'
+        users = search_user(query)
+        posts_paged = sorted(users,
                              key=lambda x: x.date_updated, reverse=True)
     return render(request, 'home.html', {'query': query,
                                          'page_obj': posts_paged})

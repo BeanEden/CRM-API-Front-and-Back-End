@@ -2,14 +2,33 @@
 <div class="snippet">
     <img class="snippet_img_bg" src="{% static 'images/event/event_bg_light.png'%}">
         <p class = "date">{{ event.date_updated }}</p>
-        <p>customer : {{ event.customer_id }}</p>
-        <p>contract :  {{ event.contract_id }}</p>
-        <p>attendees : {{ event.attendees }}</p>
-        <p>notes : {{ event.notes }}</p>
+<table>
+    <thead>
+            <tr>
+                <td class="td-infos">contract_name :</td>
+                <td class = titre>{{ event.contract_id }}</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="td-infos">customer :</td>
+                <td>{{ event.customer_id }}</td>
+            </tr>
+                <td class="td-infos">support_contact :</td>
+                <td>{{ event.support_contact }}</td>
+            </tr>
+            <tr>
+                <td class="td-infos">attendees :</td>
+                <td>{{ event.attendees }}</td>
+            </tr>
+            <tr>
+                <td class="td-infos">event_date :</td>
+                <td>{{ event.event_date }}</td>
+            </tr>
+        </tbody>
+</table>
       <div class = "customer-buttons">
         <a href="{% url 'event_detail' event.id %}"><button>See the event</button></a>
-        {% if user.team != 'sales' %}
-                <a href="{% url 'event_detail' event.id %}"><button>Modifier</button></a>
-        {% endif %}
+        <a href="{% url 'contract_detail' event.contract_id.id %}"><button>See the contract</button></a>
       </div>
-    </div>
+</div>

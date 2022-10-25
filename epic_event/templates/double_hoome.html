@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load review_extras %}
+{% block content %}
+    {%  if search %}
+    <h2> Recherche pour "{{ search }}"</h2></h>
+    {% else %}
+    <h2>Derniers posts</h2>
+    {% endif %}
+     <div class="btn-group">
+      <button>All</button>
+      <button type="submit" value="Customers">Customers</button>
+      <button type="submit" value="Contracts">Contracts</button>
+      <button type="submit" value="Events">Events</button>
+      <button onclick="myFunction(class_name=aa)>Users</button>
+     </div>
+{#    <div class="feed">#}
+    <div id="feed">
+        {% for instance in page_obj %}
+            {% if instance|model_type == 'User' %}
+                {% include 'user/user_snippet.html' with user=instance %}
+            {% elif instance|model_type == 'Customer' %}
+                {% include 'customer/customer_snippet.html' with customer=instance %}
+            {% elif instance|model_type == 'Contract' %}
+            {% include 'contract/contract_snippet.html' with contract=instance %}
+                {% elif instance|model_type == 'Event' %}
+            {% include 'event/event_snippet.html' with event=instance %}
+            {% endif %}
+        {% endfor %}
+        {% include 'partials\page_navigator.html' %}
+    </div>
+<script>
+    function myFunction(class_name) {
+  var x = document.getElementById("feed");
+  if (class_name === "aa") {
+    x.innerHTML = users
+    {% for instance in page_obj %}
+            {% if instance|model_type == 'User' %}
+                {% include 'user/user_snippet.html' with user=instance %}
+                {% endif %}
+        {% endfor %};
+  } else {
+    x.innerHTML = "Hello";
+  }
+}
+</script>
+{% endblock content %}

@@ -107,7 +107,7 @@ class UnassignedEventListView(APIView, PaginatedViewMixin):
         posts_paged = self.paginate_view(
             request, sorted(queryset,
                             key=lambda x: x.date_updated, reverse=False))
-        return Response({'events': posts_paged})
+        return Response({'events': posts_paged, 'title': "Events unassigned"})
 
 
 @api_view(('GET', 'POST'))

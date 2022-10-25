@@ -1,12 +1,38 @@
 {% extends 'base.html' %}
 {% load review_extras %}
 {% block content %}
-    <div class = "top-button">
-    </div>
-    {%  if search %}
-    <h2> Recherche pour "{{ search }}"</h2></h>
+    {%  if query %}
+    <h2> Search for "{{ query }}"</h2>
+        <div class="btn-group btn-group-justified">
+        <form action="{% url 'search' %}" method="get">
+        <button type="submit" value="{{ query }}" class="btn btn-primary"  name="search" style="width: 20%">All</button></form>
+
+        <form action="{% url 'search_customers' %}" method="get">
+        <button type="submit" value="{{ query }}" class="btn btn-primary"  name="search" style="width: 20%">Customers</button></form>
+
+        <form action="{% url 'search_contracts' %}" method="get">
+        <button type="submit" value="{{ query }}" class="btn btn-primary"  name="search" style="width: 20%">Contracts</button></form>
+
+        <form action="{% url 'search_events' %}" method="get">
+        <button type="submit" value="{{ query }}" class="btn btn-primary"  name="search" style="width: 20%">Events</button></form>
+
+         <form action="{% url 'search_users' %}" method="get">
+        <button type="submit" value="{{ query }}" class="btn btn-primary" name="search" style="width: 20%">Users</button></form>
+     </div>
     {% else %}
-    <h2>Derniers posts</h2>
+    <h2>{% get_query request %} latest posts </h2>
+        <div class="btn-group btn-group-justified">
+            <a href="{% url 'home' %}"><button class="btn btn-primary" style="width: 25%">All</button></a>
+
+            <form action="{% url 'home' %}" method="get">
+            <button type="submit" value="customers" name="search" class="btn btn-primary" style="width: 25%">Customers</button></form>
+
+            <form action="{% url 'home' %}" method="get">
+            <button type="submit" value="contracts" name="search" class="btn btn-primary" style="width: 25%">Contracts</button></form>
+
+            <form action="{% url 'home' %}" method="get">
+            <button type="submit" value="events" name="search" class="btn btn-primary" style="width: 25%">Events</button></form>
+        </div>
     {% endif %}
     <div class="feed">
         {% for instance in page_obj %}

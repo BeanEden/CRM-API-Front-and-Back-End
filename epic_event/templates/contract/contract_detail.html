@@ -1,37 +1,55 @@
 {% extends 'base.html' %}
 {% load rest_framework %}
 {% load static %}
+{% load review_extras %}
 {% block content %}
 
 <h1>Contract - {{ contract }}</h1>
 
-<label class="switch">
+{% if request.user.team != "support" %}
     <form method="POST">
-            {% csrf_token %}
-  <input type="submit" name="read_only" value = "update_mode_off">
-  <span class="slider round"></span>
+        {% csrf_token %}
+        <button class="toggle-btn" type="submit" name="read_only" value = "update_mode_off"><img src="{% static 'images/update_keylock.png'%}"></button>
     </form>
-</label>
+    {% endif %}
 
+<div class="update-form">
 
-<form method="POST">
-    {% csrf_token %}
-    {% render_form serializer %}
-    <input type="submit" name="update_contract" value="Save">
-</form>
-
-<div class="submit-form">
-    <form method="POST" enctype="multipart/form-data">
+    <form method="POST">
+        {% csrf_token %}
+        {% render_form serializer %}
+        <input class="update-button" type="submit" name="update_contract" value="Save">
+    </form>
+{% if request.user.team == 'management' %}
+    <form  method="POST" enctype="multipart/form-data">
         {{ delete_form }}
         {% csrf_token %}
-        <input type="submit" name="delete_contract" value="Delete">
+        <input class="delete-button" type="submit" name="delete_contract" value="Delete">
     </form>
-    </div>
+{% endif%}
 
+</div>
+
+{% endblock content %}
+{% block right-side %}
+
+    <div>
         {% if contract.event_associated == "uncomplete" %}
             <a href="{% url 'event_create' contract.id %}"><button>Add an event</button></a>
         {% else %}
         <p> a {{contract.event_associated}} contract.id</p>
         {% include 'event/event_snippet.html' with contract=contract %}
     {% endif %}
-{% endblock content %}
+</div>
+
+    {% for i in contract|table_contract_detail%}
+{#        for i in #}
+{#        <p>{{i[0]}}</p>#}
+    {% endfor %}
+    <table>
+        <tbody>
+        {% for i in table %}
+            <p>i</p>
+        {%endfor %}</tbody>
+    </table>
+{% endblock right-side %}
