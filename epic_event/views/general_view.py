@@ -1,6 +1,7 @@
 """General pages views"""
 from itertools import chain
 from django.contrib.auth import get_user_model
+from django.core.validators import RegexValidator
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import render
@@ -15,6 +16,14 @@ from rest_framework.views import APIView
 
 
 User = get_user_model()
+
+
+TEXT_REGEX = RegexValidator(regex='[a-zA-Z0-9]',
+                            message='Characters must be Alphanumeric')
+
+def validate_query(request, query):
+    print(TEXT_REGEX(query))
+    return query
 
 
 # -----------------------------MIXINS-----------------------------#
@@ -73,8 +82,7 @@ def search(request):
         customers = search_customer(query)
         contracts = search_contract(query)
         events = search_event(query)
-        users = search_user(query)
-        posts_paged = sorted(chain(customers, contracts, events, users),
+        posts_paged = sorted(chain(customers, contracts, events),
                              key=lambda x: x.date_updated, reverse=True)
     return render(request, 'home.html', {'query': query,
                                          'page_obj': posts_paged})
@@ -134,6 +142,6 @@ def search_users(request):
             query = 'None'
         users = search_user(query)
         posts_paged = sorted(users,
-                             key=lambda x: x.date_updated, reverse=True)
+                             key=lambda x: x.username, reverse=True)
     return render(request, 'home.html', {'query': query,
                                          'page_obj': posts_paged})

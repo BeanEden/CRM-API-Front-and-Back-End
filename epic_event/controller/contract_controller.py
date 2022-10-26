@@ -8,7 +8,7 @@ from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.permissions import IsAuthenticated
 from epic_event.views.general_view import PaginatedViewMixin
 from epic_event.models.event import Event, Contract
-from epic_event.serializers import ContractSerializer
+from epic_event.serializers import ContractSerializer, AdminContractSerializer
 from epic_event.controller.utilities import error_log
 
 
@@ -43,18 +43,48 @@ def create_contract_permission_redirect(request):
 def create_contract_prefilled_serializer(request, customer):
     """Prefill the contract serializer form"""
     serializer = ContractSerializer()
-    if request.user.team == "sales":
-        serializer = ContractSerializer(data={
-            "sales_contact": request.user.id,
-            "customer_id": customer.id},
-            partial=True)
-        serializer.is_valid()
     if request.user.team == "management":
-        serializer = ContractSerializer(data={
+        serializer = AdminContractSerializer(data={
             "sales_contact": customer.sales_contact,
             "customer_id": customer.id},
             partial=True)
         serializer.is_valid()
+    return serializer
+
+
+def contract_serializer_choice(request):
+    """Decides which serializer to pick regular or admin """
+    if request.user.team == "management":
+        serializer = AdminContractSerializer()
+    else:
+        serializer = ContractSerializer()
+    return serializer
+
+def contract_serializer_choice_create_prefill(request):
+    """Decides which serializer to pick regular or admin """
+    if request.user.team == "management":
+        serializer = AdminContractSerializer(data=request.data)
+    else:
+        serializer = ContractSerializer(data=request.data)
+    return serializer
+
+
+def contract_serializer_choice_update_prefill(request, contract):
+    """Decides which serializer to pick regular or admin """
+    if request.user.team == "management":
+        serializer = AdminContractSerializer(instance=contract)
+    else:
+        serializer = ContractSerializer(instance=contract)
+    return serializer
+
+
+def contract_serializer_choice_update(request, contract):
+    """Decides which serializer to pick regular or admin """
+    if request.user.team == "management":
+        serializer = AdminContractSerializer(data=request.data,
+                                             instance=contract)
+    else:
+        serializer = ContractSerializer(data=request.data, instance=contract)
     return serializer
 
 
@@ -93,9 +123,13 @@ def contract_read_only_toggle(request, context):
 
 def create_contract(request, customer):
     """create contract_controller"""
-    serializer = ContractSerializer(data=request.data)
+    serializer = AdminContractSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
+        if request.user.team == "sales":
+            contract = Contract.objects.filter(id=serializer.data['id'])
+            contract.sales_contact = customer.sales_contact.id
+            contract.customer_id = customer
         contract_list = Contract.objects.filter(
             customer_id=customer.id)
         customer.checking_status(contract_list)
@@ -103,15 +137,15 @@ def create_contract(request, customer):
         flash = "Contract " + name + " with customer " + str(
             customer) + " has successfully been created"
         return render(request, 'home.html', context={'flash': flash})
-    error_log(request=request,
-              text="unvalid serializer: " + str(serializer.errors))
+    serializer = create_contract_prefilled_serializer(request=request,
+                                                      customer=customer)
     return render(request, 'contract/contract_create.html',
                   context={'serializer': serializer, 'customer': customer})
 
 
 def update_contract(request, contract):
     """update contract controller"""
-    serializer = ContractSerializer(data=request.data, instance=contract)
+    serializer = contract_serializer_choice_update(request, contract)
     if serializer.is_valid():
         serializer.save()
         contract_list = Contract.objects.filter(
@@ -123,8 +157,6 @@ def update_contract(request, contract):
     context = contract_detail_context_with_event_or_not(
         serializer=serializer,
         contract=contract)
-    error_log(request=request,
-              text="unvalid serializer: " + str(serializer.errors))
     return render(request, 'contract/contract_detail.html',
                   context=context)
 

@@ -22,7 +22,7 @@ from epic_event.controller.contract_controller import create_contract, \
     create_contract_prefilled_serializer, \
     create_contract_permission_redirect, \
     my_contracts_queryset, \
-    user_contracts_queryset
+    user_contracts_queryset, contract_serializer_choice_update_prefill
 
 
 User = get_user_model()
@@ -133,7 +133,7 @@ def contract_detail_view(request, contract_id):
                                                    contract=contract)
     if check != "authorized":
         return check
-    serializer = ContractSerializer(contract)
+    serializer = contract_serializer_choice_update_prefill(request, contract)
     context = contract_detail_context_with_event_or_not(serializer=serializer,
                                                         contract=contract)
     if "read_only" in request.POST:
@@ -143,5 +143,6 @@ def contract_detail_view(request, contract_id):
         return update_contract(request=request, contract=contract)
     if "delete_contract" in request.POST:
         return delete_contract(request=request, contract=contract)
+
     return render(request, 'contract/contract_detail.html',
                   context=context)

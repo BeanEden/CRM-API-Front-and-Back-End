@@ -31,27 +31,24 @@
 </div>
 
 {% endblock content %}
-{% block right-side %}
 
+{% block right-side %}
+    <h2>Events associated</h2>
     <div>
         {% if contract.event_associated == "uncomplete" %}
             <a href="{% url 'event_create' contract.id %}"><button>Add an event</button></a>
         {% else %}
-        <p> a {{contract.event_associated}} contract.id</p>
-        {% include 'event/event_snippet.html' with contract=contract %}
+
+        {% include 'event/event_snippet.html' with event=event %}
     {% endif %}
 </div>
 
-    {% for i in contract|table_contract_detail%}
-{#        for i in #}
-{#        <p>{{i[0]}}</p>#}
+    <h2>Issues</h2>
+    {% for issue in contract|table_contract_detail%}
+            <tr>
+            {{ issue }}
+                </tr>
     {% endfor %}
-    <table>
-        <tbody>
-        {% for i in table %}
-            <p>i</p>
-        {%endfor %}</tbody>
-    </table>
 
 
 {% endblock right-side %}

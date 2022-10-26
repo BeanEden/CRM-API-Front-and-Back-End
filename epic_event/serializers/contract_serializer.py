@@ -15,25 +15,19 @@ def get_sales_contact():
 
 class ContractSerializer(ModelSerializer):
     """Contract serializer"""
-    sales_contact = ChoiceField(choices=get_sales_contact(), allow_null=True)
 
     class Meta:
         """Meta class for selecting fields"""
         model = Contract
         fields = ['id',
-                  'sales_contact',
-                  'customer_id',
                   'name',
                   'status',
                   'amount',
-                  'payment_due'
+                  'payment_due',
                   ]
-        extra_kwargs = {
-            'status': {'read_only': True},
-        }
 
 
-class ContractManagementSerializer(ModelSerializer):
+class AdminContractSerializer(ModelSerializer):
     """Contract serializer for the management"""
     sales_contact = ChoiceField(choices=get_sales_contact(), allow_null=True)
 
@@ -48,6 +42,3 @@ class ContractManagementSerializer(ModelSerializer):
                   'amount',
                   'payment_due'
                   ]
-        extra_kwargs = {
-            'status': {'read_only': True},
-        }

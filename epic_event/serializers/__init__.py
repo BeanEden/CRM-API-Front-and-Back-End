@@ -1,4 +1,4 @@
 from .user_serializer import UserDetailSerializer
-from .contract_serializer import ContractSerializer
+from .contract_serializer import ContractSerializer, AdminContractSerializer
 from .customer_serializer import CustomerSerializer, AdminCustomerSerializer
-from .event_serializer import EventSerializer
+from .event_serializer import EventSerializer, AdminEventSerializer

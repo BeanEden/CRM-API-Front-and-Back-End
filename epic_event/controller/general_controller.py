@@ -2,6 +2,7 @@
 import datetime
 from itertools import chain
 from operator import attrgetter
+
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 from epic_event.models import Customer, Contract, Event
@@ -18,6 +19,8 @@ def date_str_split(date):
     return str(date)
 
 
+
+
 CONTRACT_NOTIFICATIONS = {
     'payment_due': ['Payment date is passed.',
                     'Reschedule or update status'],
@@ -26,8 +29,6 @@ CONTRACT_NOTIFICATIONS = {
     'status': ['Contract closed before payment date',
                'Update contract']
                  }
-
-
 
 
 def get_last_posts_selected(query):
@@ -44,9 +45,6 @@ def get_last_posts_selected(query):
     elif query == 'events':
         posts = Event.objects.all()
     return posts
-
-
-
 
 
 def check_contract(contract_list):
@@ -110,5 +108,5 @@ def search_user(query):
             Q(last_name__icontains=query) |
             Q(email__icontains=query) |
             Q(username__icontains=query)),
-        key=attrgetter('date_updated'))
+        key=attrgetter('first_name'))
     return result_list

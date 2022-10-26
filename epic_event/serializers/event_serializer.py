@@ -15,6 +15,19 @@ def get_support_contact():
 
 class EventSerializer(ModelSerializer):
     """Event serializer"""
+
+    class Meta:
+        """Meta class"""
+        model = Event
+        fields = ['id',
+                  'attendees',
+                  'event_date',
+                  'notes'
+                  ]
+
+
+class AdminEventSerializer(ModelSerializer):
+    """Event serializer"""
     support_contact = ChoiceField(choices=get_support_contact(),
                                   allow_null=True)
 

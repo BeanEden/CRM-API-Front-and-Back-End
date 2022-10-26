@@ -17,8 +17,8 @@ EVENT_STATUS = [('complete', 'COMPLETE'),
 class Contract(models.Model):
     """Contract model"""
     sales_contact = models.ForeignKey(to=settings.AUTH_USER_MODEL,
-                                      on_delete=models.CASCADE)
-    customer_id = models.ForeignKey(to=Customer, on_delete=models.CASCADE)
+                                      on_delete=models.CASCADE, null=True)
+    customer_id = models.ForeignKey(to=Customer, on_delete=models.CASCADE, null=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
     status = models.BooleanField(default=True)

@@ -21,7 +21,8 @@ from epic_event.controller.customer_controller import \
     create_customer_permission_redirect, \
     user_customer_queryset, \
     my_customers_queryset, unactive_customers_queryset, \
-    customer_read_only_toggle, customer_serializer_choice_create
+    customer_read_only_toggle, customer_serializer_choice_create, \
+    customer_serializer_choice_update_prefill
 
 
 User = get_user_model()
@@ -114,7 +115,8 @@ def customer_detail_view(request, customer_id):
                                                    customer=customer)
     if check != "authorized":
         return check
-    serializer = CustomerSerializer(customer)
+    serializer = customer_serializer_choice_update_prefill(request=request,
+                                                           customer=customer)
     context = {'serializer': serializer, 'customer': customer}
     if "read_only" in request.POST:
         return customer_read_only_toggle(request=request,
@@ -124,4 +126,4 @@ def customer_detail_view(request, customer_id):
     if "delete_customer" in request.POST:
         return delete_customer(request=request, customer=customer)
     return render(request, 'customer/customer_detail.html',
-                  context={'serializer': serializer, 'customer': customer})
+                  context=context)

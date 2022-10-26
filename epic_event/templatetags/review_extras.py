@@ -21,7 +21,7 @@ CONTRACT_NOTIFICATIONS = {
     'payment_due': ['Payment date is passed.',
                     'Reschedule or update status'],
     'event_associated': ['No event associated to this contract',
-                         'Add a contract now'],
+                         'Add an event'],
     'status': ['Contract closed before payment date',
                'Update contract']
                  }
@@ -101,11 +101,6 @@ def table_contract_detail(contract):
     notification_dict = check_contract(contract)
     table = []
     for key, value in notification_dict.items():
-        line = '<tr><td>'+key+'</td>'\
-               +'<td>'+value[0]+'</td>'\
-               +'<td>'+value[1]+'</td></tr>'
         line = [key, value[0], value[1]]
         table.append(line)
     return table
-
-

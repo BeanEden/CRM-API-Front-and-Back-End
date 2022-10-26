@@ -45,6 +45,24 @@ def customer_serializer_choice_create_prefill(request):
     return serializer
 
 
+def customer_serializer_choice_update_prefill(request, customer):
+    """Decides which serializer to pick regular or admin """
+    if request.user.team == "management":
+        serializer = AdminCustomerSerializer(instance=customer)
+    else:
+        serializer = CustomerSerializer(instance=customer)
+    return serializer
+
+
+def customer_serializer_choice_update_save(request, customer):
+    """Decides which serializer to pick regular or admin """
+    if request.user.team == "management":
+        serializer = AdminCustomerSerializer(data=request.data, instance=customer)
+    else:
+        serializer = CustomerSerializer(data=request.data, instance=customer)
+    return serializer
+
+
 def create_customer(request):
     """Create a customer controller"""
     serializer = customer_serializer_choice_create_prefill(request)
@@ -65,13 +83,13 @@ def create_customer(request):
 
 def update_customer(request, customer):
     """Update customer controller"""
-    serializer = CustomerSerializer(data=request.data, instance=customer)
+    serializer = customer_serializer_choice_update_save(request=request,
+                                                        customer=customer)
     if serializer.is_valid():
         serializer.save()
         customer.checking_profile_complete()
         name = str(customer)
         flash = "Customer " + name + " has been successfully updated"
-        redirect('home', )
         return render(request, 'home.html', context={'flash': flash})
     error_log(request=request,
               text="unvalid serializer: " + str(serializer.errors))

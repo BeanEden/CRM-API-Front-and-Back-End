@@ -23,7 +23,7 @@ from epic_event.controller.event_controller import create_event, \
     user_events_queryset, \
     unassigned_event_queryset, \
     my_events_queryset, \
-    create_event_serializer_filling
+    create_event_serializer_filling, update_event_serializer_filling
 
 
 User = get_user_model()
@@ -124,7 +124,7 @@ def event_create_view(request, contract_id):
         contract=contract)
     if check != "authorized":
         return check
-    serializer = create_event_serializer_filling(contract=contract)
+    serializer = create_event_serializer_filling(request=request, contract=contract)
     if "create" in request.POST:
         return create_event(request=request, contract=contract)
     return render(request, 'event/event_create.html',
@@ -139,7 +139,7 @@ def event_detail_view(request, event_id):
     check = event_permission_redirect_read_only(request=request, event=event)
     if check != "authorized":
         return check
-    serializer = EventSerializer(event)
+    serializer = update_event_serializer_filling(request=request, event=event)
     context = {'serializer': serializer, 'event': event}
     if "read_only" in request.POST:
         return event_read_only_toggle(request=request, context=context)
@@ -159,7 +159,7 @@ def contract_event_detail_view(request, contract_id):
     check = event_permission_redirect_read_only(request=request, event=event)
     if check != "authorized":
         return check
-    serializer = EventSerializer(event)
+    serializer = update_event_serializer_filling(event)
     context = {'serializer': serializer, 'event': event}
     if "read_only" in request.POST:
         return event_read_only_toggle(request=request, context=context)

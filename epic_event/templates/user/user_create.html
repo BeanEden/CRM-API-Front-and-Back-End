@@ -4,12 +4,12 @@
 {% block content %}
 
 <h1>Create_user</h1>
-
+    <div class="update-form">
 <form action="{% url 'user_create' %}" method="POST">
     {% csrf_token %}
     {% render_form serializer %}
-    <input type="submit" value="Save">
+    <input class="update-button" type="submit" value="Save">
 </form>
+    </div>
 
-<p>user_form</p>
 {% endblock content %}

@@ -68,15 +68,17 @@
     </div>
 </div>
 
-
-{% endblock content %}
+{%  endblock content %}
 {% block right-side %}
-    {% if contract.event_associated == "uncomplete"%}
-        {% if request.user.team != "support" %}
-        <a href="{% url 'event_create' contract.id %}"><button>Add an event</button></a>
-        {% endif %}
+
+    <div>
+        {% if contract.event_associated == "uncomplete" %}
+            <a href="{% url 'event_create' contract.id %}"><button>Add an event</button></a>
         {% else %}
-        <p> a {{contract.event_associated}} contract.id</p>
-        {% include 'event/event_snippet.html' with contract=contract %}
+            <h2>Event associated</h2>
+        {% include 'event/event_snippet.html' with event=event %}
     {% endif %}
+</div>
+
+
 {% endblock right-side %}

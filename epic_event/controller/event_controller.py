@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import render, get_object_or_404
 from epic_event.models.event import Event
 from epic_event.models.customer import Customer
-from epic_event.serializers import EventSerializer
+from epic_event.serializers import EventSerializer, AdminEventSerializer
 from .utilities import error_log
 
 
@@ -12,12 +12,11 @@ User = get_user_model()
 
 def create_event(request, contract):
     """Docstring"""
-    serializer = EventSerializer(data=request.data)
+    serializer = create_event_serializer(request=request)
     if serializer.is_valid():
         serializer.save()
         contract.event_associated = "complete"
         contract.save()
-        print(contract)
         event = get_object_or_404(Event, id=serializer.data['id'])
         flash = "Event " + str(event) + " has been successfully created"
         return render(request, 'event/event_read_only.html',
@@ -25,7 +24,7 @@ def create_event(request, contract):
                                'event': event})
     error_log(request=request,
               text="unvalid serializer: " + str(serializer.errors))
-    return render(request, 'event/event_create.html',
+    return render(request, 'event/event_detail.html',
                   context={'serializer': serializer, "contract": contract})
 
 
@@ -77,7 +76,7 @@ def event_read_only_toggle(request, context):
 
 def update_event(request, event):
     """Docstring"""
-    serializer = EventSerializer(data=request.data, instance=event)
+    serializer = update_event_serializer(request=request, event=event)
     if serializer.is_valid():
         serializer.save()
         name = str(event)
@@ -104,13 +103,46 @@ def delete_event(request, event):
     return render(request, 'home.html', context={'flash': flash})
 
 
-def create_event_serializer_filling(contract):
+def create_event_serializer_filling(request, contract):
     """Docstring"""
-    serializer = EventSerializer(data={
-        "customer_id": contract.customer_id.id,
-        "contract_id": contract.id},
-        partial=True)
-    serializer.is_valid()
+    if request.user.team == "management":
+        serializer = AdminEventSerializer(data={
+            "customer_id": contract.customer_id.id,
+            "contract_id": contract.id},
+            partial=True)
+        serializer.is_valid()
+    else:
+        serializer = EventSerializer()
+    return serializer
+
+
+def create_event_serializer(request):
+    """Docstring"""
+    if request.user.team == "management":
+        serializer = AdminEventSerializer(data=request.data)
+
+    else:
+        serializer = EventSerializer(data=request.data)
+    return serializer
+
+
+def update_event_serializer_filling(request, event):
+    """Docstring"""
+    if request.user.team == "management":
+        serializer = AdminEventSerializer(instance=event)
+
+    else:
+        serializer = EventSerializer(instance=event)
+    return serializer
+
+
+def update_event_serializer(request, event):
+    """Docstring"""
+    if request.user.team == "management":
+        serializer = AdminEventSerializer(data=request.data, instance=event)
+
+    else:
+        serializer = EventSerializer(data=request.data, instance=event)
     return serializer
 
 
