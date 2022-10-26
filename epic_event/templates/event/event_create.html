@@ -12,3 +12,9 @@
 </form>
     </div>
 {% endblock content %}
+{% block right-side %}
+    <h2>Customer associated</h2>
+        {% include 'customer/customer_snippet.html' with customer=contract.customer_id %}
+    <h2>Contract associated</h2>
+        {% include 'contract/contract_snippet.html' with contract=contract %}
+{% endblock right-side %}

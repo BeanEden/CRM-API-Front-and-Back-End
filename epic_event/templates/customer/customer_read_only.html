@@ -69,9 +69,19 @@
                 <td>{{ customer.status }}</td>
             </tr>
 </table>
-    <div class=customer-buttons>
-        <a href="{% url 'contract_list' %}"><button><img src="{% static 'images/contrat_list.png'%}">Ongoing contracts</button></a>
-        <a href="{% url 'customer_event_list' customer.id %}"><button>Events associated</button></a>
-    </div>
-</div>
 {% endblock content %}
+
+{% block right-side %}
+    <h2>Contracts associated</h2>
+    <div class=customer-buttons>
+    {% if customer.status != "blacklisted" %}
+        <a href="{% url 'contract_create' customer.id %}"><button><img src="{% static 'images/add_contract.png'%}">Add a contract</button></a>
+    {% endif %}
+    {% if customer.status != "prospect"%}
+        <a href="{% url 'contract_list' %}"><button><img src="{% static 'images/contrat_list.png'%}">Contracts associated</button></a>
+        <a href="{% url 'customer_event_list' customer.id %}"><button><img src="{% static 'images/event/event_bg_small.png'%}">Events associated</button></a>
+    {% endif %}
+    </div>
+    <h2>Issues</h2>
+
+{% endblock right-side %}

@@ -155,11 +155,11 @@ def event_detail_view(request, event_id):
 @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
 def contract_event_detail_view(request, contract_id):
     """Event detail linked to a contract"""
-    event = get_object_or_404(Event, id=contract_id)
+    event = get_object_or_404(Event, contract_id=contract_id)
     check = event_permission_redirect_read_only(request=request, event=event)
     if check != "authorized":
         return check
-    serializer = update_event_serializer_filling(event)
+    serializer = update_event_serializer_filling(request=request, event=event)
     context = {'serializer': serializer, 'event': event}
     if "read_only" in request.POST:
         return event_read_only_toggle(request=request, context=context)

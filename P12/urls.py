@@ -98,7 +98,7 @@ urlpatterns = [
          name='event_create'),
     path('<int:event_id>/event_detail/', event_detail_view,
          name='event_detail'),
-    path('<int:contract_id>/event_detail/', contract_event_detail_view,
+    path('<int:contract_id>/contract_event_detail/', contract_event_detail_view,
          name='contract_event_detail')
     ]
 

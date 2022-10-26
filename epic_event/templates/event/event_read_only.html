@@ -55,3 +55,12 @@
 </table>
 </div>
 {% endblock content %}
+{% block right-side %}
+    <h2>Contract associated</h2>
+    <div>
+        {% include 'contract/contract_snippet.html' with contract=event.contract_id %}
+</div>
+
+    <h2>Issues</h2>
+
+{% endblock right-side %}

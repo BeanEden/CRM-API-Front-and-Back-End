@@ -177,14 +177,14 @@ LOGGING = {
             'formatter': 'verbose',
         },
     },
-    # 'loggers': {
-    #     'django': {
-    #         'handlers': ['django', 'console'],
-    #         'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG'),
-    #     },
-    #     'user': {
-    #         'handlers': ['user', 'console'],
-    #         'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
-    #     },
-    # },
+    'loggers': {
+        'django': {
+            'handlers': ['django'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG'),
+        },
+        'user': {
+            'handlers': ['user'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+        },
+    },
 }

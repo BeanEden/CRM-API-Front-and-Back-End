@@ -34,14 +34,14 @@
 
 {% block right-side %}
     <h2>Events associated</h2>
-    <div>
         {% if contract.event_associated == "uncomplete" %}
+                <div class=customer-buttons>
             <a href="{% url 'event_create' contract.id %}"><button>Add an event</button></a>
+                </div>
         {% else %}
 
         {% include 'event/event_snippet.html' with event=event %}
     {% endif %}
-</div>
 
     <h2>Issues</h2>
     {% for issue in contract|table_contract_detail%}

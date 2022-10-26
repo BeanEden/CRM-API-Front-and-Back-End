@@ -5,11 +5,13 @@
 
 <h1>Create a new customer</h1>
 <div class="update-form">
+<div class="submit-form">
     <form action="{% url 'customer_create' %}" method="POST">
         {% csrf_token %}
         {% render_form serializer %}
         <input class="update-button" type="submit" name="create_customer" value="Save">
     </form>
+</div>
 </div>
 {% endblock content %}
 

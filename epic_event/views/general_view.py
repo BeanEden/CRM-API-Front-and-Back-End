@@ -10,7 +10,7 @@ from epic_event.models.contract import Contract
 from epic_event.models.customer import Customer
 from epic_event.controller.general_controller import search_event, \
     search_contract, \
-    search_customer, search_user, get_last_posts_selected
+    search_customer, search_user, get_last_posts_selected, check_search_query
 
 from rest_framework.views import APIView
 
@@ -18,12 +18,6 @@ from rest_framework.views import APIView
 User = get_user_model()
 
 
-TEXT_REGEX = RegexValidator(regex='[a-zA-Z0-9]',
-                            message='Characters must be Alphanumeric')
-
-def validate_query(request, query):
-    print(TEXT_REGEX(query))
-    return query
 
 
 # -----------------------------MIXINS-----------------------------#
@@ -63,6 +57,10 @@ class GlobalFeed(LoginRequiredMixin, APIView, PaginatedViewMixin):
         return: url + page_object (= paginated posts)
         """
         query = request.GET.get('search')
+        if check_search_query(query) == "error":
+            flash = "Unauthorized character in search"
+            return render(request, self.template_name,
+                      context={'flash': flash})
         posts = get_last_posts_selected(query)
         posts_paged = self.paginate_view(
             request, sorted(posts,
@@ -79,6 +77,10 @@ def search(request):
         query = request.GET.get('search')
         if query == '':
             query = 'None'
+        if check_search_query(query) == "error":
+            flash = "Unauthorized character in search"
+            return render(request, 'home.html',
+                            context={'flash': flash})
         customers = search_customer(query)
         contracts = search_contract(query)
         events = search_event(query)

@@ -10,6 +10,9 @@ from epic_event.models import Customer, Contract, Event
 User = get_user_model()
 
 
+UNAUTHORIZED_QUERY_CHARACTER = "{}[]()<>,;'*/\+:!?"
+
+
 def date_str_split(date):
     """date reformat for comparison"""
     date = str(date)
@@ -18,6 +21,12 @@ def date_str_split(date):
     date = days+hours
     return str(date)
 
+
+def check_search_query(query):
+    for i in str(query):
+        if i in UNAUTHORIZED_QUERY_CHARACTER:
+            return 'error'
+    return query
 
 
 
