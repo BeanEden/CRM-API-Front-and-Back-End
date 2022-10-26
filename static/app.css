@@ -278,7 +278,6 @@ h2 {
     float:right;
 }
 
-
 .snippet .review-button button {
     position: sticky;
     bottom: 50%;
@@ -447,13 +446,13 @@ h2 {
   transition: .4s;
 }
 
-input:checked + .slider {
-  background-color: #2196F3;
-}
+/*input:checked + .slider {*/
+/*  background-color: #2196F3;*/
+/*}*/
 
-input:focus + .slider {
-  box-shadow: 0 0 1px #2196F3;
-}
+/*input:focus + .slider {*/
+/*  box-shadow: 0 0 1px #2196F3;*/
+/*}*/
 
 input:checked + .slider:before {
   -webkit-transform: translateX(26px);
@@ -470,12 +469,22 @@ input:checked + .slider:before {
   border-radius: 50%;
 }
 
-.btn-group .btn-group-justified button {
+.btn-group .btn-group-justified button{
   background-color: #ffffff; /* Green background */
   border: 2px solid #01094d; /* Green border */
   color: white; /* White text */
   padding: 10px 24px; /* Some padding */
   cursor: pointer; /* Pointer/hand icon */
+    float: left;
+}
+
+.btn-group button {
+  background-color: #ffffff; /* Green background */
+  border: 2px solid #01094d; /* Green border */
+  color: white; /* White text */
+  padding: 10px 24px; /* Some padding */
+  cursor: pointer; /* Pointer/hand icon */
+    float: left;
 }
 
 .btn .btn-primary {

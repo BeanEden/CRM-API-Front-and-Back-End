@@ -70,9 +70,8 @@
             </tr>
 </table>
     <div class=customer-buttons>
-
-            <a href="{% url 'contract_list' %}"><button><img src="{% static 'images/contrat_list.png'%}">Ongoing contracts</button></a>
-                <a href="{% url 'customer_event_list' customer.id %}"><button>Events associated</button></a>
+        <a href="{% url 'contract_list' %}"><button><img src="{% static 'images/contrat_list.png'%}">Ongoing contracts</button></a>
+        <a href="{% url 'customer_event_list' customer.id %}"><button>Events associated</button></a>
     </div>
 </div>
 {% endblock content %}

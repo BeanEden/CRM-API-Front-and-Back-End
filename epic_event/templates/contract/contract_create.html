@@ -4,11 +4,11 @@
 {% block content %}
 
 <h1>Create a new contract</h1>
-
-<form action="{% url 'contract_create' customer.id %}" method="POST">
-    {% csrf_token %}
-    {% render_form serializer %}
-    <input type="submit" name="create" value="Save">
-</form>
-
+<div class="update-form">
+    <form action="{% url 'contract_create' customer.id %}" method="POST">
+        {% csrf_token %}
+        {% render_form serializer %}
+        <input class="update-button" type="submit" name="create" value="Save">
+    </form>
+</div>
 {% endblock content %}

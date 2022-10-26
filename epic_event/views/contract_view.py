@@ -24,6 +24,7 @@ from epic_event.controller.contract_controller import create_contract, \
     my_contracts_queryset, \
     user_contracts_queryset
 
+
 User = get_user_model()
 
 
@@ -128,7 +129,8 @@ def contract_create_view(request, customer_id):
 def contract_detail_view(request, contract_id):
     """Contract detail view (get / update/delete"""
     contract = get_object_or_404(Contract, id=contract_id)
-    check = contract_read_only_permission_redirect(request=request, contract=contract)
+    check = contract_read_only_permission_redirect(request=request,
+                                                   contract=contract)
     if check != "authorized":
         return check
     serializer = ContractSerializer(contract)

@@ -20,7 +20,6 @@
 </form>
 
 {% if request.user.team == "management" %}
-
 <div class="submit-form">
     <form method="POST" enctype="multipart/form-data">
         {{ delete_form }}
@@ -32,12 +31,10 @@
     {% endif %}
 {% endblock content %}
 
-
 {% block right-side %}
-
-        <div class=customer-buttons>
+    <div class=customer-buttons>
         <a href="{% url 'contract_create' customer.id %}"><button><img src="{% static 'images/add_contract.png'%}">Add a contract</button></a>
-            <a href="{% url 'contract_list' %}"><button><img src="{% static 'images/contrat_list.png'%}">Ongoing contracts</button></a>
-                <a href="{% url 'customer_event_list' customer.id %}"><button>Events associated</button></a>
+        <a href="{% url 'contract_list' %}"><button><img src="{% static 'images/contrat_list.png'%}">Ongoing contracts</button></a>
+        <a href="{% url 'customer_event_list' customer.id %}"><button><img src="{% static 'images/event/event_bg_small.png'%}">Events associated</button></a>
     </div>
 {% endblock right-side %}

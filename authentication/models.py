@@ -15,10 +15,10 @@ USER_TEAM = [(TEAMS[0], 'GESTION'),
 
 class User(AbstractUser):
     """General user class"""
-    team = models.CharField(max_length=20, choices=USER_TEAM)
+    team = models.CharField(max_length=25, choices=USER_TEAM)
     first_name = models.CharField(max_length=255, validators=[validate_slug])
     last_name = models.CharField(max_length=255, validators=[validate_slug])
-    email = models.EmailField(blank=False, unique=True)
+    email = models.EmailField(max_length=100, blank=False, unique=True)
     username = models.CharField(max_length=255, validators=[validate_slug],
                                 unique=True)
     password = models.CharField(max_length=255, blank=False,
@@ -26,7 +26,6 @@ class User(AbstractUser):
 
     def __str__(self):
         return str(self.username)
-
 
 
 def clean_string(string, *args):

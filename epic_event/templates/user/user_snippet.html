@@ -8,7 +8,21 @@
     {% elif  user.team == 'sales' %}
         <img class="snippet_img_bg" src="{% static 'images/users/sales_user.png'%}">
     {% endif %}
-        <p>username : {{ user.username }}</p>
-        <p>team : {{ user.team }}</p>
-        <p>email : {{ user.email }}</p>
+    <table>
+        <tr>
+            <td class="td-infos">user : </td>
+            <td class = titre>{{ user.first_name }} {{ user.last_name }}</td>
+        </tr>
+{#        <tr>#}
+{#            <td class="td-infos">username : </td>#}
+{#            <td>{{ user.username }}</td>#}
+{#        </tr>#}
+        <tr>
+            <td class="td-infos">team : </td>
+            <td>{{ user.team }}</td>
+        <tr>
+            <td class="td-infos">email : </td>
+            <td>{{ user.email }}</td>
+        </tr>
+    </table>
 </div>

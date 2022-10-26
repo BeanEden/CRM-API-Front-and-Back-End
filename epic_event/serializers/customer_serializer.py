@@ -15,6 +15,22 @@ def get_sales_contact():
 
 class CustomerSerializer(ModelSerializer):
     """Customer Serializer"""
+
+    class Meta:
+        """Meta class for selecting fields"""
+        model = Customer
+        fields = ['id',
+                  'company_name',
+                  'first_name',
+                  'last_name',
+                  'email',
+                  'phone',
+                  'mobile',
+                  ]
+
+
+class AdminCustomerSerializer(ModelSerializer):
+    """Admin Customer Serializer"""
     sales_contact = ChoiceField(choices=get_sales_contact(), allow_null=True)
 
     class Meta:
@@ -30,7 +46,3 @@ class CustomerSerializer(ModelSerializer):
                   'mobile',
                   'status'
                   ]
-
-        extra_kwargs = {
-            'status': {'read_only': True},
-            }

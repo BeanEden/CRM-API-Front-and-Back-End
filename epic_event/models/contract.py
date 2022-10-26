@@ -6,6 +6,7 @@ from .validators import validate_future_date
 from .customer import Customer
 
 
+
 TEXT_REGEX = RegexValidator(regex='[a-zA-Z0-9]',
                             message='characters must be Alphanumeric')
 
@@ -16,10 +17,8 @@ EVENT_STATUS = [('complete', 'COMPLETE'),
 class Contract(models.Model):
     """Contract model"""
     sales_contact = models.ForeignKey(to=settings.AUTH_USER_MODEL,
-                                      on_delete=models.CASCADE,
-                                      null=True, blank=True)
-    customer_id = models.ForeignKey(to=Customer, on_delete=models.CASCADE,
-                                    null=True, blank=True)
+                                      on_delete=models.CASCADE)
+    customer_id = models.ForeignKey(to=Customer, on_delete=models.CASCADE)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
     status = models.BooleanField(default=True)

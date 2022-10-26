@@ -21,7 +21,7 @@ from epic_event.controller.customer_controller import \
     create_customer_permission_redirect, \
     user_customer_queryset, \
     my_customers_queryset, unactive_customers_queryset, \
-    customer_read_only_toggle
+    customer_read_only_toggle, customer_serializer_choice_create
 
 
 User = get_user_model()
@@ -97,7 +97,7 @@ def customer_create_view(request):
     check = create_customer_permission_redirect(request=request)
     if check != "authorized":
         return check
-    serializer = CustomerSerializer()
+    serializer = customer_serializer_choice_create(request)
     if "create_customer" in request.POST:
         return create_customer(request=request)
     return render(request, 'customer/customer_create.html',
@@ -110,7 +110,8 @@ def customer_create_view(request):
 def customer_detail_view(request, customer_id):
     """Customer detailed view"""
     customer = get_object_or_404(Customer, id=customer_id)
-    check = customer_permission_redirect_read_only(request=request, customer=customer)
+    check = customer_permission_redirect_read_only(request=request,
+                                                   customer=customer)
     if check != "authorized":
         return check
     serializer = CustomerSerializer(customer)

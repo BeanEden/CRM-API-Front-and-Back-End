@@ -7,8 +7,6 @@
 {#    {% render_form { serializer } %}#}
 {#    <input type="submit" value="Save">#}
 {#</form>#}
-
-
     <div class="btn-group btn-group-justified">
         <a href="{% url 'contract_list' %}"><button class="btn btn-primary" style="width: 33.3%">All contracts</button></a>
         <a href="{% url 'my_contract_list' %}"><button class="btn btn-primary" style="width: 33.3%">Related to me</button></a>
@@ -24,10 +22,6 @@
             </div>
         {% endif %}
     {% endfor %}
-
-    </div>
      {% include 'partials\page_navigator.html' %}
-
-
-
+    </div>
 {% endblock content %}

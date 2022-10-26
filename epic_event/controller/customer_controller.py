@@ -2,7 +2,7 @@
 from itertools import chain
 from django.contrib.auth import get_user_model
 from django.shortcuts import render, redirect, get_object_or_404
-from epic_event.serializers import CustomerSerializer
+from epic_event.serializers import CustomerSerializer, AdminCustomerSerializer
 from epic_event.models import Customer, Event
 from .utilities import error_log
 
@@ -16,12 +16,6 @@ def create_customer_permission_redirect(request):
         flash = "You don't have permission to access this page"
         error_log(request=request, text="tried unauthorized customer creation")
         return render(request, 'home.html', context={'flash': flash})
-    if request.user.team == "sales":
-        serializer = CustomerSerializer(data={
-            "sales_contact": request.user.id}, partial=True,)
-        if serializer.is_valid():
-            return render(request, 'customer/customer_create.html',
-                          context={'serializer': serializer})
     return "authorized"
 
 
@@ -33,18 +27,38 @@ def customer_permission_redirect_read_only(request, customer):
     return "authorized"
 
 
+def customer_serializer_choice_create(request):
+    """Decides which serializer to pick regular or admin """
+    if request.user.team == "management":
+        serializer = AdminCustomerSerializer()
+    else:
+        serializer = CustomerSerializer()
+    return serializer
+
+
+def customer_serializer_choice_create_prefill(request):
+    """Decides which serializer to pick regular or admin """
+    if request.user.team == "management":
+        serializer = AdminCustomerSerializer(data=request.data)
+    else:
+        serializer = CustomerSerializer(data=request.data)
+    return serializer
+
+
 def create_customer(request):
     """Create a customer controller"""
-    serializer = CustomerSerializer(data=request.data)
+    serializer = customer_serializer_choice_create_prefill(request)
     if serializer.is_valid():
         serializer.save()
         customer = get_object_or_404(Customer, id=serializer.data['id'])
+        if request.user.team == "sales":
+            customer.sales_contact = request.user
+            customer.save()
         customer.checking_profile_complete()
         name = serializer.data["first_name"] + ' ' + serializer.data["last_name"]
         flash = "Customer " + name + " has been successfully created"
-        return render(request, 'home.html', context={'flash': flash}), \
-               error_log(request=request,
-              text="unvalid serializer: " + str(serializer.errors))
+        return render(request, 'home.html', context={'flash': flash})
+    error_log(request=request, text="unvalid serializer: " + str(serializer.errors))
     return render(request, 'customer/customer_create.html',
                   context={'serializer': serializer})
 
