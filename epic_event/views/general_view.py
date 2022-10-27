@@ -1,23 +1,16 @@
 """General pages views"""
 from itertools import chain
 from django.contrib.auth import get_user_model
-from django.core.validators import RegexValidator
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import render
-from epic_event.models.event import Event
-from epic_event.models.contract import Contract
-from epic_event.models.customer import Customer
 from epic_event.controller.general_controller import search_event, \
     search_contract, \
     search_customer, search_user, get_last_posts_selected, check_search_query
-
 from rest_framework.views import APIView
 
 
 User = get_user_model()
-
-
 
 
 # -----------------------------MIXINS-----------------------------#
@@ -69,6 +62,8 @@ class GlobalFeed(LoginRequiredMixin, APIView, PaginatedViewMixin):
                       context={'page_obj': posts_paged})
 
 
+# ---------------------------SEARCH---------------------------#
+
 def search(request):
     """Global search result"""
     posts_paged = []
@@ -80,7 +75,7 @@ def search(request):
         if check_search_query(query) == "error":
             flash = "Unauthorized character in search"
             return render(request, 'home.html',
-                            context={'flash': flash})
+                          context={'flash': flash})
         customers = search_customer(query)
         contracts = search_contract(query)
         events = search_event(query)
@@ -118,6 +113,7 @@ def search_contracts(request):
                              key=lambda x: x.date_updated, reverse=True)
     return render(request, 'home.html', {'query': query,
                                          'page_obj': posts_paged})
+
 
 def search_events(request):
     """Global search result"""

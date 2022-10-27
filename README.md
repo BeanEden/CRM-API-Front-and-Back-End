@@ -60,7 +60,7 @@ http://127.0.0.1:8000/
 
 ### Connection :
 You need a provided account or a superuser account to access the CRM.
-You can't register on yur own.
+You can't register on your own.
 
 All others endpoints/views require to be authenticated
 

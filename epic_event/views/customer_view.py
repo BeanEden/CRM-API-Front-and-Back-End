@@ -11,7 +11,6 @@ from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.permissions import IsAuthenticated
 
 from epic_event.models.customer import Customer
-from epic_event.serializers import CustomerSerializer
 from epic_event.views.general_view import PaginatedViewMixin
 from epic_event.controller.customer_controller import \
     customer_permission_redirect_read_only, \
@@ -105,7 +104,7 @@ def customer_create_view(request):
                   context={'serializer': serializer})
 
 
-@api_view(('GET', 'POST', 'DELETE'))
+@api_view(('GET', 'POST'))
 @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
 @login_required()
 def customer_detail_view(request, customer_id):

@@ -15,9 +15,6 @@
     <div class="feed">
     {% for user in users %}
         {% include 'user/user_snippet.html' with user=user %}
-        <div class="modal">
-        {% include 'user/modal.html' with user=user%}
-        </div>
         {% if request.user.team == management %}
             <div class = "edit-button">
                 <a href="{% url 'user_detail' user.id %}"><button>Modifier</button></a>

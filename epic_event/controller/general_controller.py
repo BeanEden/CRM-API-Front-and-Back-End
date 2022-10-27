@@ -29,7 +29,6 @@ def check_search_query(query):
     return query
 
 
-
 CONTRACT_NOTIFICATIONS = {
     'payment_due': ['Payment date is passed.',
                     'Reschedule or update status'],

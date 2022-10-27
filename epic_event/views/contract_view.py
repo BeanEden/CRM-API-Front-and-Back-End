@@ -11,7 +11,6 @@ from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.permissions import IsAuthenticated
 
 from epic_event.models import Contract, Customer
-from epic_event.serializers import ContractSerializer
 from epic_event.views.general_view import PaginatedViewMixin
 from epic_event.controller.contract_controller import create_contract, \
     update_contract, \
@@ -123,7 +122,7 @@ def contract_create_view(request, customer_id):
                   context={'serializer': serializer, 'customer': customer})
 
 
-@api_view(('GET', 'POST', 'DELETE'))
+@api_view(('GET', 'POST'))
 @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
 @login_required()
 def contract_detail_view(request, contract_id):

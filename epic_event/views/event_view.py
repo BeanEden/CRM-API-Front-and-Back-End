@@ -11,7 +11,6 @@ from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.permissions import IsAuthenticated
 
 from epic_event.models import Event, Contract
-from epic_event.serializers import EventSerializer
 from epic_event.views.general_view import PaginatedViewMixin
 from epic_event.controller.event_controller import create_event, \
     create_event_permission_redirect, \
@@ -131,7 +130,7 @@ def event_create_view(request, contract_id):
                   context={'serializer': serializer, "contract": contract})
 
 
-@api_view(('GET', 'POST', 'DELETE'))
+@api_view(('GET', 'POST'))
 @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
 def event_detail_view(request, event_id):
     """Event detail view (get, update, delete"""
@@ -151,7 +150,7 @@ def event_detail_view(request, event_id):
                   context=context)
 
 
-@api_view(('GET', 'POST', 'DELETE'))
+@api_view(('GET', 'POST'))
 @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
 def contract_event_detail_view(request, contract_id):
     """Event detail linked to a contract"""
