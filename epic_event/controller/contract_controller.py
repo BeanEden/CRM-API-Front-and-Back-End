@@ -88,9 +88,10 @@ def create_contract(request, customer):
     if serializer.is_valid():
         serializer.save()
         if request.user.team == "sales":
-            contract = Contract.objects.filter(id=serializer.data['id'])
-            contract.sales_contact = customer.sales_contact.id
+            contract = get_object_or_404(Contract, id=serializer.data['id'])
+            contract.sales_contact = customer.sales_contact
             contract.customer_id = customer
+            contract.save()
         contract_list = Contract.objects.filter(
             customer_id=customer.id)
         customer.checking_status(contract_list)

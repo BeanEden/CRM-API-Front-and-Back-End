@@ -2,6 +2,10 @@
 from itertools import chain
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
+from rest_framework.decorators import api_view, renderer_classes
+from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
+from rest_framework.permissions import IsAuthenticated
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import render
 from epic_event.controller.general_controller import search_event, \
@@ -42,7 +46,9 @@ class GlobalFeed(LoginRequiredMixin, APIView, PaginatedViewMixin):
     """Class view used to generate a paginated list of all tickets and reviews
     ordered chronologically (soonest first)
     """
+    renderer_classes = [TemplateHTMLRenderer]
     template_name = 'home.html'
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         """
@@ -63,7 +69,9 @@ class GlobalFeed(LoginRequiredMixin, APIView, PaginatedViewMixin):
 
 
 # ---------------------------SEARCH---------------------------#
-
+@api_view(('GET', 'POST'))
+@renderer_classes((TemplateHTMLRenderer, JSONRenderer))
+@login_required()
 def search(request):
     """Global search result"""
     posts_paged = []
@@ -84,7 +92,9 @@ def search(request):
     return render(request, 'home.html', {'query': query,
                                          'page_obj': posts_paged})
 
-
+@api_view(('GET', 'POST'))
+@renderer_classes((TemplateHTMLRenderer, JSONRenderer))
+@login_required()
 def search_customers(request):
     """Global search result"""
     posts_paged = []
@@ -99,7 +109,9 @@ def search_customers(request):
     return render(request, 'home.html', {'query': query,
                                          'page_obj': posts_paged})
 
-
+@api_view(('GET', 'POST'))
+@renderer_classes((TemplateHTMLRenderer, JSONRenderer))
+@login_required()
 def search_contracts(request):
     """Global search result"""
     posts_paged = []
@@ -114,7 +126,9 @@ def search_contracts(request):
     return render(request, 'home.html', {'query': query,
                                          'page_obj': posts_paged})
 
-
+@api_view(('GET', 'POST'))
+@renderer_classes((TemplateHTMLRenderer, JSONRenderer))
+@login_required()
 def search_events(request):
     """Global search result"""
     posts_paged = []
@@ -129,7 +143,9 @@ def search_events(request):
     return render(request, 'home.html', {'query': query,
                                          'page_obj': posts_paged})
 
-
+@api_view(('GET', 'POST'))
+@renderer_classes((TemplateHTMLRenderer, JSONRenderer))
+@login_required()
 def search_users(request):
     """Global search result"""
     posts_paged = []

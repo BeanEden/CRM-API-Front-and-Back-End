@@ -72,9 +72,18 @@ def create_event_serializer(request):
 
 def create_event(request, contract):
     """Docstring"""
+    if not contract.status:
+        flash = "This contract isn't signed yet"
+        return render(request, 'home.html',
+                      context={'flash': flash})
     serializer = create_event_serializer(request=request)
     if serializer.is_valid():
         serializer.save()
+        if request.user.team == "sales":
+            event = get_object_or_404(Event, id=serializer.data['id'])
+            event.contract_id =contract
+            event.customer_id = contract.customer_id
+            event.save()
         contract.event_associated = "complete"
         contract.save()
         event = get_object_or_404(Event, id=serializer.data['id'])
