@@ -62,7 +62,9 @@
                 <button class="dropbtn">Customers<i class="fa fa-caret-down"></i></button>
                         <div class="dropdown-content">
                           <a href="{% url 'customer_list' %}">Browse</a>
+                        {% if request.user.team != "support" %}
                             <a href="{% url 'customer_create' %}">New</a>
+                            {% endif %}
                             {% if request.user.team != "management" %}
                             <a href="{% url 'my_customer_list' %}">My customers</a>
                             {%  endif %}

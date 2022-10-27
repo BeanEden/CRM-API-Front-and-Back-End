@@ -16,3 +16,9 @@
 [2022/Oct/27 14:40:35] INFO [signals.py:12] admin_m login successful
 [2022/Oct/27 14:42:48] INFO [signals.py:27] admin_m log out successful
 [2022/Oct/27 14:42:55] INFO [signals.py:12] sales_user login successful
+[2022/Oct/27 14:48:38] INFO [signals.py:27] sales_user log out successful
+[2022/Oct/27 14:48:40] INFO [signals.py:12] admin_m login successful
+[2022/Oct/27 14:48:52] INFO [signals.py:27] admin_m log out successful
+[2022/Oct/27 14:48:56] INFO [signals.py:12] sales_user login successful
+[2022/Oct/27 14:49:36] INFO [signals.py:27] sales_user log out successful
+[2022/Oct/27 14:49:43] INFO [signals.py:12] s_p login successful
