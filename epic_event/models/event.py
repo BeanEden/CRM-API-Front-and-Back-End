@@ -33,7 +33,7 @@ class Event(models.Model):
     event_date = models.DateTimeField(null=True,
                                       validators=[validate_future_date])
     notes = models.TextField(blank=True, validators=[TEXT_REGEX])
-    status = models.BooleanField(default=True)
+    status = models.BooleanField(default=False)
 
 
     class Meta:

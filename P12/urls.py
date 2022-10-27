@@ -53,6 +53,7 @@ urlpatterns = [
     path('user_create/', SignUpView.as_view(), name='user_create'),
     path('<int:user_id>/user_detail/', user_detail_view, name='user_detail'),
 
+
     # -------------------------CUSTOMER PAGES-------------------------#
     path('customer_list/', CustomerListView.as_view(), name='customer_list'),
     path('customer_create/', customer_create_view, name="customer_create"),
