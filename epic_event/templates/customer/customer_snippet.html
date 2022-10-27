@@ -65,7 +65,9 @@
             <a href="{% url 'customer_contract_list' customer.id%}"><button><img src="{% static 'images/contrat_list.png'%}">Ongoing contracts</button></a>
         {% endif %}
         {% if request.user.team != 'support' %}
+            {% if customer.status != 'blacklisted' %}
         <a href="{% url 'contract_create' customer.id %}"><button><img src="{% static 'images/add_contract.png'%}">Add a contract</button></a>
+                {% endif %}
         {% endif %}
     </div>
 </div>
