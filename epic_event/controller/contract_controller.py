@@ -84,7 +84,7 @@ def contract_serializer_choice_create_prefill(request):
 
 def create_contract(request, customer):
     """create contract_controller"""
-    serializer = AdminContractSerializer(data=request.data)
+    serializer = contract_serializer_choice_create_prefill(request)
     if serializer.is_valid():
         serializer.save()
         if request.user.team == "sales":
@@ -98,6 +98,7 @@ def create_contract(request, customer):
         flash = "Contract " + name + " with customer " + str(
             customer) + " has successfully been created"
         return render(request, 'home.html', context={'flash': flash})
+
     serializer = create_contract_prefilled_serializer(request=request,
                                                       customer=customer)
     return render(request, 'contract/contract_create.html',

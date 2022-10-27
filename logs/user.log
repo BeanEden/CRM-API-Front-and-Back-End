@@ -1,1 +1,18 @@
 
+[2022/Oct/27 14:03:58] INFO [signals.py:12] admin_m login successful
+[2022/Oct/27 14:05:20] INFO [signals.py:27] admin_m log out successful
+[2022/Oct/27 14:05:21] INFO [signals.py:12] admin_m login successful
+[2022/Oct/27 14:22:21] INFO [signals.py:27] admin_m log out successful
+[2022/Oct/27 14:22:56] INFO [signals.py:12] supp_person login successful
+[2022/Oct/27 14:23:12] INFO [signals.py:27] supp_person log out successful
+[2022/Oct/27 14:23:15] INFO [signals.py:12] s_p login successful
+[2022/Oct/27 14:24:02] INFO [signals.py:27] s_p log out successful
+[2022/Oct/27 14:24:04] INFO [signals.py:12] admin_m login successful
+[2022/Oct/27 14:24:16] INFO [signals.py:27] admin_m log out successful
+[2022/Oct/27 14:24:18] INFO [signals.py:12] s_p login successful
+[2022/Oct/27 14:24:45] INFO [signals.py:27] s_p log out successful
+[2022/Oct/27 14:24:48] INFO [signals.py:12] admin_m login successful
+[2022/Oct/27 14:40:03] INFO [signals.py:27] admin_m log out successful
+[2022/Oct/27 14:40:35] INFO [signals.py:12] admin_m login successful
+[2022/Oct/27 14:42:48] INFO [signals.py:27] admin_m log out successful
+[2022/Oct/27 14:42:55] INFO [signals.py:12] sales_user login successful
