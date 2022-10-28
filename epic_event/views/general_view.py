@@ -42,7 +42,7 @@ class PaginatedViewMixin:
 
 # ---------------------------HOME AND USER PAGES---------------------------#
 
-class GlobalFeed(LoginRequiredMixin, APIView, PaginatedViewMixin):
+class GlobalFeed(APIView, PaginatedViewMixin):
     """Class view used to generate a paginated list of all tickets and reviews
     ordered chronologically (soonest first)
     """

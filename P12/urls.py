@@ -17,12 +17,16 @@ from epic_event.views.event_view import EventListView, CustomerEventListView, \
     MyEventListView, UserEventListView, UnassignedEventListView, \
     event_create_view, event_detail_view, contract_event_detail_view
 from epic_event.views.general_view import GlobalFeed, search, search_events, search_users, search_customers, search_contracts
-from authentication.views import SignUpView
+from authentication.views import SignUpView, MyObtainTokenPairView
+from rest_framework_simplejwt.views import TokenRefreshView
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 
+    path('login/', MyObtainTokenPairView.as_view(), name='token_obtain_pair'),
+    path('login_view/', MyObtainTokenPairView.as_view(), name='token_obtain_pair'),
+    path('login/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     # -------------------------AUTHENTICATION PAGES-------------------------#
 
     path('', LoginView.as_view(
