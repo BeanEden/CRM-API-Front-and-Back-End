@@ -10,7 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
-import os, environ
+import os
+import environ
+from datetime import timedelta
 from pathlib import Path
 
 env = environ.Env()
@@ -19,7 +21,7 @@ environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-LOG_PATH = str(BASE_DIR)+ '\logs'
+LOG_PATH = str(BASE_DIR) + '\logs'
 absolute = 'C:\opc finis\P12\logs'
 DJANGO_LOG_LEVEL = BASE_DIR
 
@@ -46,6 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework_simplejwt',
     'authentication',
     'epic_event',
 ]
@@ -81,6 +84,10 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'P12.wsgi.application'
 
+CORS_ALLOW_CREDENTIALS = True # to accept cookies via ajax request
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:8000' # the domain for front-end app(you can add more than 1)
+]
 
 DATABASES = {
     'default': {
@@ -125,10 +132,30 @@ USE_I18N = True
 USE_TZ = True
 
 
-# REST_FRAMEWORK = {
-#     'DEFAULT_PAGINATION_CLASS' : 'rest_framework.pagination.LimitOffsetPagination',
-#     'PAGE_SIZE' : 5,
-# }
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+        # make all endpoints private
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'authentication.authentication.SafeJWTAuthentication',
+        # 'rest_framework_simplejwt.authentication.JSONWebTokenAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.BasicAuthentication',
+    ),
+    # 'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework_simplejwt.authentication.JWTAuthentication',),
+    # 'DEFAULT_PAGINATION_CLASS' : 'rest_framework.pagination.LimitOffsetPagination',
+
+    # 'PAGE_SIZE' : 5,
+}
+
+
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=40),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKEN': True,
+}
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/

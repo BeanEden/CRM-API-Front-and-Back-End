@@ -1,4 +1,9 @@
 """Url"""
+
+from django.contrib import admin
+from django.urls import path
+from rest_framework_simplejwt import views as jwt_views
+
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -17,18 +22,21 @@ from epic_event.views.event_view import EventListView, CustomerEventListView, \
     MyEventListView, UserEventListView, UnassignedEventListView, \
     event_create_view, event_detail_view, contract_event_detail_view
 from epic_event.views.general_view import GlobalFeed, search, search_events, search_users, search_customers, search_contracts
-from authentication.views import SignUpView
+from authentication.views import SignUpView, login_view
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/token/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
+    path('login/', login_view, name='login'),
 
     # -------------------------AUTHENTICATION PAGES-------------------------#
 
-    path('', LoginView.as_view(
-        template_name='authentication/login.html',
-        redirect_authenticated_user=True),
-        name='login'),
+    # path('', LoginView.as_view(
+    #     template_name='authentication/login.html',
+    #     redirect_authenticated_user=True),
+    #     name='login'),
     path('logout/', LogoutView.as_view(),
          name='logout'),
     path('change-password/', PasswordChangeView.as_view(
