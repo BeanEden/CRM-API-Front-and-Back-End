@@ -130,10 +130,10 @@ def event_create_view(request, contract_id):
                   context={'serializer': serializer, "contract": contract})
 
 
-@api_view(('GET', 'POST'))
+@api_view(('GET', 'POST', 'PUT', 'DELETE'))
 @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
 def event_detail_view(request, event_id):
-    """Event detail view (get, update, delete"""
+    """Event detail view (get, update, delete)"""
     event = get_object_or_404(Event, id=event_id)
     check = event_permission_redirect_read_only(request=request, event=event)
     if check != "authorized":
@@ -146,11 +146,15 @@ def event_detail_view(request, event_id):
         return update_event(request=request, event=event)
     if "delete_event" in request.POST:
         return delete_event(request=request, event=event)
+    if request.method == "PUT":
+        return update_event(request=request, event=event)
+    if request.method == "DELETE" :
+        return delete_event(request=request, event=event)
     return render(request, 'event/event_detail.html',
                   context=context)
 
 
-@api_view(('GET', 'POST'))
+@api_view(('GET', 'POST', 'PUT', 'DELETE'))
 @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
 def contract_event_detail_view(request, contract_id):
     """Event detail linked to a contract"""
@@ -165,6 +169,10 @@ def contract_event_detail_view(request, contract_id):
     if "update_event" in request.POST:
         return update_event(request=request, event=event)
     if "delete_event" in request.POST:
+        return delete_event(request=request, event=event)
+    if request.method == "PUT":
+        return update_event(request=request, event=event)
+    if request.method == "DELETE" :
         return delete_event(request=request, event=event)
     return render(request, 'event/event_detail.html',
                   context=context)

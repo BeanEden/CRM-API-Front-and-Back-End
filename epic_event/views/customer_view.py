@@ -104,7 +104,7 @@ def customer_create_view(request):
                   context={'serializer': serializer})
 
 
-@api_view(('GET', 'POST'))
+@api_view(('GET', 'POST', 'PUT', 'DELETE'))
 @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
 @login_required()
 def customer_detail_view(request, customer_id):
@@ -123,6 +123,10 @@ def customer_detail_view(request, customer_id):
     if "update_customer" in request.POST:
         return update_customer(request=request, customer=customer)
     if "delete_customer" in request.POST:
+        return delete_customer(request=request, customer=customer)
+    if request.method == "PUT":
+        return update_customer(request=request, customer=customer)
+    if request.method == "DELETE":
         return delete_customer(request=request, customer=customer)
     return render(request, 'customer/customer_detail.html',
                   context=context)

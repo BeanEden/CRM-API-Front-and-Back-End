@@ -122,7 +122,7 @@ def contract_create_view(request, customer_id):
                   context={'serializer': serializer, 'customer': customer})
 
 
-@api_view(('GET', 'POST'))
+@api_view(('GET', 'POST', 'PUT', 'DELETE'))
 @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
 @login_required()
 def contract_detail_view(request, contract_id):
@@ -142,6 +142,9 @@ def contract_detail_view(request, contract_id):
         return update_contract(request=request, contract=contract)
     if "delete_contract" in request.POST:
         return delete_contract(request=request, contract=contract)
-
+    if request.method == "PUT":
+        return update_contract(request=request, contract=contract)
+    if request.method == "DELETE":
+        return delete_contract(request=request, contract=contract)
     return render(request, 'contract/contract_detail.html',
                   context=context)

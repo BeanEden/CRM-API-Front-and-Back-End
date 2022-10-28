@@ -164,4 +164,3 @@ def delete_customer(request, customer):
 
 
 
-
